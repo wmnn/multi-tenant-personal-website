@@ -47,7 +47,7 @@ export class AuthManagement implements AuthManager {
         redirect(303, '/admin');
     }
 
-    async handleTokenVerification(e: RequestEvent) {
+    async isAccessTokenValid(e: RequestEvent): Promise<boolean> {
 
         const accessToken = e.cookies.get('access-token') ?? undefined
 
@@ -57,18 +57,13 @@ export class AuthManagement implements AuthManager {
             return false;
         }
 
-        const isValid = await (new Promise(async (resolve, _) => {
+        return await (new Promise(async (resolve, _) => {
             jwt.verify(accessToken, JWT_SECRET, function(err, _) {
                 if (err) resolve(false);
                 resolve(true)
             })
         }))
-
-        if (!isValid) {
-            return false;
-        } 
-
-        return true;
+    
     }
 
     removeAllCookies(e: RequestEvent) {

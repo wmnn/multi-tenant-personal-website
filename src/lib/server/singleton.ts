@@ -19,7 +19,7 @@ export interface AuthManager {
     handleLogin(e: RequestEvent): any
     handleLogout(e: RequestEvent): any
     handleRefresh?(e: RequestEvent): any
-    handleTokenVerification(e: RequestEvent): any
+    isAccessTokenValid(e: RequestEvent): Promise<boolean>
 
 }
 
