@@ -1,5 +1,6 @@
 import { Sqlite3Db } from '$lib/server/sqlite3'
 import type { RequestEvent } from '@sveltejs/kit'
+import { AuthManagement } from './authManagement'
 let db: DB | AuthManager
 
 /**
@@ -24,8 +25,7 @@ export interface AuthManager {
 
 export interface UserStore {
 
-    findUser(email: string): User | undefined
-    findUser(email: string, password: string): User | undefined
+    findUser(email: string, password: string): Promise<undefined | User>
 
 }
 
@@ -46,6 +46,10 @@ export function getDB() : DB {
 
 export function getAuthManager() : AuthManager {
 
-    return getDB() as AuthManager;
+    return new AuthManagement(getUserStore());
 
+}
+
+export function getUserStore() : UserStore {
+    return getDB() as UserStore;
 }
