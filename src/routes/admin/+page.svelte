@@ -12,4 +12,10 @@
 <main>
     <p>Admin Panel</p>
     <p>Blocked content: {JSON.stringify(data)}</p>
+
+    <hr>
+
+   
+    
+    <a href="/posts/create">Create Post</a>
 </main>

@@ -1,5 +1,10 @@
-import { redirect } from "@sveltejs/kit";
-
+/**
+ * This function calls the endpoint and on a not authorized fetch,
+ * it tries to get a new access token and calling the endpoint again.
+ * 
+ * @param endpoint the endpoint that will be called
+ * @returns a json response with data
+ */
 export async function fetchEndpoint(endpoint: string) {
 
     const operation = async () => {
