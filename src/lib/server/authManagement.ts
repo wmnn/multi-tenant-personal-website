@@ -75,8 +75,10 @@ export class AuthManagement implements AuthManager {
 
         return await (new Promise(async (resolve, _) => {
             jwt.verify(accessToken, JWT_SECRET, function(err, _) {
-                if (err) resolve(false);
-                resolve(true)
+                if (err) console.log('Access token is not valid')
+                if (err) return resolve(false);
+                console.log('Access token is valid')
+                return resolve(true)
             })
         }))
     

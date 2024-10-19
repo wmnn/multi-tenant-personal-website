@@ -94,6 +94,27 @@ export class Sqlite3Db implements DB, UserStore {
 
     }
 
+    async getPosts(count: number, latestFlag: boolean) : Promise<Post[]> {
+
+        if (latestFlag) {
+            return await new Promise(resolve => this.db.all('SELECT * FROM posts ORDER BY createdAt DESC LIMIT ?', [count], (err, posts: Post[]) => {
+                if (err) {
+                    console.error(err)
+                    return resolve([]);
+                }
+                resolve(posts);
+            }))
+        } else {
+            return await new Promise(resolve => this.db.all('SELECT * FROM posts LIMIT ?', [count], (err, posts: Post[]) => {
+                if (err) {
+                    console.error(err)
+                    return resolve([]);
+                }
+                resolve(posts);
+            }))
+        }
+    }
+
     private createHash(stringToBeHashed: string) {
         return crypto.createHash('md5').update(stringToBeHashed).digest('hex')
     }

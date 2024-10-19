@@ -1,10 +1,13 @@
 <script>
 	import Header from './Header.svelte';
 	import '../app.css';
+
+	export let data;
+
 </script>
 
 <div class="app">
-	<Header />
+	<Header isUserLoggedIn={data.isUserLoggedIn}/>
 
 	<main>
 		<slot />

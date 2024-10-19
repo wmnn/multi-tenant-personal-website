@@ -1,5 +1,5 @@
 import { getAuthManager, getDB } from "$lib/server/singleton.js";
-import { json, redirect } from "@sveltejs/kit";
+import { json } from "@sveltejs/kit";
 import { randomUUID } from "crypto";
 import fs from 'fs';
 
@@ -24,7 +24,8 @@ export async function POST(event) {
 
     console.log('Before checking access token')
     if (!await getAuthManager().isAccessTokenValid(event)) {
-        console.log('Access token is not valid')
+
+        console.log('Returning json response with status code 401')
         return json({
             status: 401
         })
@@ -37,15 +38,29 @@ export async function POST(event) {
     const thumbnail = formData.get('thumbnail') as File;
 
     // Serving public image
-    if (!thumbnail || title == '' || content == '') {
+    if (title == '' || content == '') {
         return json({
             status: 501
         })
     }
+    if (!thumbnail) {
+        // Writing data to database
+        const postId = await getDB().createPost({
+            title: title,
+            content: content,
+            author: (event.locals.userId as number),
+            thumbnailHash: '',
+            createdAt: new Date().toISOString()
+        })
+        return json({
+            status: 200,
+            postUrl: `/posts/${postId}`
+        })
+    }
 
     const buffer = Buffer.from(await thumbnail.arrayBuffer()); 
-    const thumbnailId = randomUUID();
-    const filePath = `./static/images/${thumbnailId}.${thumbnail.type.split('/')[1]}`;
+    const thumbnailId = randomUUID() + thumbnail.type.split('/')[1];
+    const filePath = `./static/images/${thumbnailId}`;
     fs.writeFileSync(filePath, buffer); // Write the Buffer directly
 
     console.log('Saving new post')

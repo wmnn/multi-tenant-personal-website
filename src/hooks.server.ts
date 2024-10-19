@@ -13,5 +13,7 @@ export const handle: Handle = async ({event, resolve}) => {
 		event.locals.userId = userId;
 	}
 	
-	return await resolve(event) 
+	const resolved = await resolve(event);
+	console.log('Resolved request\n')
+	return resolved;
 }

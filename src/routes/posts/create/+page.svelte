@@ -31,8 +31,10 @@
         <label for="content">Content</label>        
         <textarea name="content"></textarea>
     
+        <!--
         <label for="thumbnail">Thumbnail</label>
         <input type="file" id="thumbnail" name="thumbnail">
+        -->
      
         <Button>
             <p>Save</p>

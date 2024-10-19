@@ -10,6 +10,7 @@ export interface DB {
 
     createPost(post: Post): Promise<number>
     getPost(postId: number): Promise<Post | undefined>
+    getPosts(count: number, latestFlag: boolean) : Promise<Post[]>
 
 }
 
@@ -45,7 +46,7 @@ export interface Post {
     id?: number,
     title: string,
     content: string,
-    thumbnailHash: string,
+    thumbnailHash?: string,
     author: number,
     createdAt: string
 }
