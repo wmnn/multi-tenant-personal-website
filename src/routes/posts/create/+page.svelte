@@ -1,16 +1,29 @@
 <script lang="ts">
-    import { fetchEndpoint } from "$lib/client/auth";
+    import { request } from "$lib/client/auth";
     import Button from "$lib/client/Button.svelte";
     import Input from "$lib/client/Input.svelte";
 
-    function handleSubmit(e: any) {
-        
+    async function handleSubmit(e: any) {
         e.preventDefault();
+
+        const formData = new FormData(e.target);
+      
+        const res = await request('/api/posts', {
+            method: 'POST',
+            body: formData
+        })
+
+        console.log(res)
+
+        if (res.status == 200 && res.postUrl) {
+            window.location.href = res.postUrl;
+        }
+
     }
 </script>
 
 <main class="flex justify-center">
-    <form method="POST" class="flex flex-col justify-center xl:px-[20%]" enctype="multipart/form-data" on:submit={e => handleSubmit(e)}>
+    <form class="flex flex-col justify-center xl:px-[20%]" enctype="multipart/form-data" on:submit={e => handleSubmit(e)}>
     
         <label for="title">Title</label>
         <Input placeholder="title" name="title"/>
@@ -19,7 +32,7 @@
         <textarea name="content"></textarea>
     
         <label for="thumbnail">Thumbnail</label>
-        <input type="file" name="thumbnail">
+        <input type="file" id="thumbnail" name="thumbnail">
      
         <Button>
             <p>Save</p>

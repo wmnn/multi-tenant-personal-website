@@ -5,7 +5,7 @@
 				<a href="/login">Login</a>
 			</li>
 			<li>
-				<a href="/logout">LogOut</a>
+				<a href="/api/logout">LogOut</a>
 			</li>
 		</ul>
 	</nav>

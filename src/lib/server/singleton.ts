@@ -1,13 +1,16 @@
 import { Sqlite3Db } from '$lib/server/sqlite3'
 import type { RequestEvent } from '@sveltejs/kit'
 import { AuthManagement } from './authManagement'
-let db: DB | AuthManager
+let db: DB | AuthManager | UserStore
 
 /**
  * Interface for a class with database logic
  */
 export interface DB {
-    
+
+    createPost(post: Post): Promise<number>
+    getPost(postId: number): Promise<Post | undefined>
+
 }
 
 /**
@@ -20,6 +23,7 @@ export interface AuthManager {
     handleLogout(e: RequestEvent): any
     handleRefresh?(e: RequestEvent): any
     isAccessTokenValid(e: RequestEvent): Promise<boolean>
+    getUserId(e: RequestEvent): Promise<number>
 
 }
 
@@ -37,11 +41,20 @@ export interface User {
 
 }
 
+export interface Post {
+    id?: number,
+    title: string,
+    content: string,
+    thumbnailHash: string,
+    author: number,
+    createdAt: string
+}
+
 export function getDB() : DB {
     if (!db) {
         db = new Sqlite3Db();
     }
-    return db
+    return db as DB
 }
 
 export function getAuthManager() : AuthManager {
@@ -51,5 +64,8 @@ export function getAuthManager() : AuthManager {
 }
 
 export function getUserStore() : UserStore {
-    return getDB() as UserStore;
+    if (!db) {
+        db = new Sqlite3Db();
+    }
+    return db as UserStore
 }

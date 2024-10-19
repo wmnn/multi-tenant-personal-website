@@ -5,7 +5,7 @@
     let data: any = ''
 
     onMount(async () => {
-        data = await fetchEndpoint('/posts')
+        data = await fetchEndpoint('/api/posts')
     })
 </script>
 
@@ -14,8 +14,6 @@
     <p>Blocked content: {JSON.stringify(data)}</p>
 
     <hr>
-
-   
     
     <a href="/posts/create">Create Post</a>
 </main>

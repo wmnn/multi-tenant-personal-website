@@ -1,4 +1,4 @@
-import type { DB, User, UserStore } from "./singleton";
+import type { DB, User, UserStore, Post } from "./singleton";
 
 import sqlite3 from 'sqlite3';
 import crypto from 'crypto'
@@ -19,16 +19,33 @@ export class Sqlite3Db implements DB, UserStore {
                 email TEXT, 
                 password VARCHAR(24)
             )`);
-        
-            // Creating admin account in order to be able to create posts
-            const stmt = this.db.prepare(`
-                INSERT OR REPLACE INTO users(email, password) VALUES ($email, $password);
+
+            // Creating posts table
+            this.db.run(`
+                CREATE TABLE IF NOT EXISTS posts (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    title	TEXT NOT NULL,
+                    content	TEXT NOT NULL,
+                    author	INTEGER NOT NULL,
+                    thumbnailHash	TEXT NOT NULL,
+                    createdAt	TEXT NOT NULL
+                ); 
             `);
-            stmt.run({
-                $email: ADMIN_EMAIL, 
-                $password: this.createHash(ADMIN_PASSWORD)
-            });
-            stmt.finalize();
+
+            // Create admin account if it doesn't exist
+            this.db.get('SELECT * FROM users WHERE email = ? AND password = ?;', [ADMIN_EMAIL, this.createHash(ADMIN_PASSWORD)], (err, user: User | undefined) => {
+                if (err || user == undefined) {
+                    const stmt = this.db.prepare(`
+                        INSERT INTO users(id, email, password) VALUES (1, $email, $password);
+                    `);
+                    stmt.run({
+                        $email: ADMIN_EMAIL, 
+                        $password: this.createHash(ADMIN_PASSWORD)
+                    });
+                    stmt.finalize();
+                }
+            })
+        
         });
 
     }
@@ -45,6 +62,36 @@ export class Sqlite3Db implements DB, UserStore {
             resolve(user);
         }))
     
+    }
+
+    async createPost(post: Post): Promise<number> {
+        
+        return new Promise(resolve => { 
+            this.db.run(
+                `INSERT INTO posts(title, content, author, thumbnailHash, createdAt) VALUES (?, ?, ?, ?, ?)`, 
+                [ post.title, post.content, post.author, post.thumbnailHash, post.createdAt ?? new Date().toISOString()], 
+                function(err: any) {
+                    if (err) {
+                        resolve(-1);
+                    }
+                    // get the last insert id
+                    console.log(`A row has been inserted with rowid ${this.lastID}`);
+                    resolve(this.lastID);
+                }
+            );
+        })
+    }
+
+    async getPost(postId: number): Promise<Post | undefined> {
+
+        return await new Promise(resolve => this.db.get('SELECT * FROM posts WHERE id = ?', [postId], (err, post: Post | undefined) => {
+            if (err || post == undefined) {
+                return resolve(undefined);
+            }
+
+            resolve(post);
+        }))
+
     }
 
     private createHash(stringToBeHashed: string) {

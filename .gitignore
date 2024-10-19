@@ -22,3 +22,6 @@ vite.config.ts.timestamp-*
 
 # Sqlite3
 *.sqlite3
+
+#images
+/static/images/*

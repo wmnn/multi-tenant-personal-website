@@ -4,7 +4,11 @@ import { error, json, redirect, type RequestEvent } from "@sveltejs/kit";
 import jwt from 'jsonwebtoken';
 import { JWT_SECRET } from '$env/static/private'
 
+const refreshPath = '/api/refresh'
 
+/**
+ * Handles mostly authentication / authorization through cookies and a RequestEvent.
+ */
 export class AuthManagement implements AuthManager {
 
     private userStore;
@@ -15,6 +19,25 @@ export class AuthManagement implements AuthManager {
 
     userCanCreatePosts(): boolean {
         return true;
+    }
+
+    async getUserId(e: RequestEvent) : Promise<number> {
+        
+        const accessToken = e.cookies.get('access-token') ?? undefined
+
+        // No access token cookie
+        if (!accessToken) {
+            this.removeAllCookies(e);
+            return -1;
+        }
+
+        return await (new Promise(async (resolve, _) => {
+            jwt.verify(accessToken, JWT_SECRET, function(err, decoded: any) {
+                if (err || !decoded || !decoded.id) return resolve(-1);
+                console.log(decoded)
+                resolve(decoded.id)
+            })
+        }))
     }
 
     async handleLogin(event: RequestEvent) {
@@ -32,16 +55,9 @@ export class AuthManagement implements AuthManager {
             });
         }
 
-        // Setting cookies 60s * 15min = 900s
-        event.cookies.set('access-token', jwt.sign({ id: user.id }, JWT_SECRET, {expiresIn: 10}), {
-            path: '/',
-            httpOnly: true
-        });
-
-        event.cookies.set('refresh-token', jwt.sign({ id: user.id }, JWT_SECRET, {expiresIn: '7d'}), {
-            path: '/refresh', // The cookie will only be send to the server on the /refresh endpoint (CSRF Protection)
-            httpOnly: true
-        });        
+        // Setting cookies
+        this.setAccessToken(event, user.id);
+        this.setRefreshToken(event, user.id);
 
         // Redirecting to admin panel
         redirect(303, '/admin');
@@ -70,7 +86,7 @@ export class AuthManagement implements AuthManager {
 
         // Deleting the cookies set in the authentication process
         e.cookies.delete('access-token', { path: '/' })
-        e.cookies.delete('refresh-token', { path: '/refresh',  httpOnly: true })
+        e.cookies.delete('refresh-token', { path: refreshPath,  httpOnly: true })
 
     }
 
@@ -81,7 +97,7 @@ export class AuthManagement implements AuthManager {
 
     }
 
-    handleRefresh(e: RequestEvent) {
+    async handleRefresh(e: RequestEvent) {
 
         console.log('Refreshing tokens')
         const refreshToken = e.cookies.get('refresh-token') ?? undefined;
@@ -91,19 +107,35 @@ export class AuthManagement implements AuthManager {
             this.removeAllCookies(e);
             return json({status: 401});
         }
+
+        const decoded: any = await (new Promise(async (resolve, reject) => {
+            jwt.verify(refreshToken, JWT_SECRET, function(err, decoded) {
+                if (err) reject(err);
+                resolve(decoded)
+            })
+        })).catch(rejected => {
+            this.removeAllCookies(e);
+            return json({status: 401});
+        });
    
         // Updating cookies
-        e.cookies.set('access-token', jwt.sign({ id: '' }, JWT_SECRET, {expiresIn: 10}), {
+        this.setAccessToken(e, decoded.id);
+        this.setRefreshToken(e, decoded.id);
+        return json({status: 200});
+    }
+
+    private setAccessToken(e: RequestEvent, userId: string) {
+        e.cookies.set('access-token', jwt.sign({ id: userId }, JWT_SECRET, {expiresIn: 10}), {
             path: '/',
             httpOnly: true
         });
+    }
 
-        e.cookies.set('refresh-token', jwt.sign({ id: '' }, JWT_SECRET, {expiresIn: '7d'}), {
-            path: '/refresh',
+    private setRefreshToken(e: RequestEvent, userId: string) {
+        e.cookies.set('refresh-token', jwt.sign({ id: userId }, JWT_SECRET, {expiresIn: '7d'}), {
+            path: refreshPath,
             httpOnly: true
         });
-
-        return json({status: 200});
     }
 
 }

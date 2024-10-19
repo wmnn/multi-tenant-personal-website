@@ -1,5 +1,5 @@
 import { getAuthManager } from "$lib/server/singleton.js";
-import { error, redirect } from "@sveltejs/kit";
+import { redirect } from "@sveltejs/kit";
 
 /**
  * This endpoint is responsible for issueing a new access and refresh token
@@ -9,7 +9,7 @@ export async function GET(event) {
 
     // Checking if the auth manager implemented the handle refresh method
     if (typeof getAuthManager().handleRefresh === 'function') {
-        return getAuthManager().handleRefresh!(event);
+        return await getAuthManager().handleRefresh!(event);
     }
 
     // If the auth manager didn't implement the method, we will redirect the user to the main page on this endpoint

@@ -12,7 +12,6 @@ export async function fetchEndpoint(endpoint: string) {
     }
 
     // ----- Fetch first time -----
-    console.log('First attempt.')
     const res = await operation();
 
     // Successfull fetch
@@ -21,8 +20,7 @@ export async function fetchEndpoint(endpoint: string) {
     }
 
     // ----- Trying to retrieve new access token -----
-    console.log('Refreshing access token')
-    const refresh = await (await fetch('/refresh')).json()
+    const refresh = await (await fetch('/api/refresh')).json()
 
     // Couldn't retrieve new access token
     if (refresh.status !== 200) {
@@ -31,7 +29,6 @@ export async function fetchEndpoint(endpoint: string) {
     }
 
     // ----- Fetch the second time -----
-    console.log('Second attempt.')
     const res2 = await operation();
 
     // Successfull second fetch
@@ -40,7 +37,50 @@ export async function fetchEndpoint(endpoint: string) {
     } 
 
     // Second fetch failed
-    console.log('Second attempt failed.');
     window.location.href = '/'
     
+}
+
+export async function request(endpoint: string, options?: RequestInit) {
+
+    const operation = async () => {
+        return await (await fetch(endpoint, options)).json();
+    }
+
+    // ----- Fetch first time -----
+    const res = await operation();
+
+    console.log('First attempt ' + JSON.stringify(res));
+
+    // Successfull fetch
+    if (res.status !== 401) {
+        return res;
+    }
+
+    // ----- Trying to retrieve new access token -----
+    console.log('Trying to refresh access token')
+    await new Promise(resolve => setTimeout(resolve, 50))
+    const refresh = await (await fetch('/api/refresh')).json()
+    
+    console.log('Refresh response ' + JSON.stringify(refresh));
+
+    // Couldn't retrieve new access token
+    if (refresh.status !== 200) {
+        window.location.href = '/'
+        return;
+    }
+
+    // ----- Fetch the second time -----
+    const res2 = await operation();
+
+    console.log('Second attempt ' + JSON.stringify(res2));
+
+    // Successfull second fetch
+    if (res2.status !== 401) {
+        return res2;
+    } 
+
+    // Second fetch failed
+    window.location.href = '/'
+
 }
