@@ -1,13 +1,5 @@
 <script lang="ts">
-    import { fetchEndpoint } from '$lib/client/auth.js';
     import Button from '$lib/client/Button.svelte';
-    import { onMount } from 'svelte';
-
-    let data: any = ''
-
-    onMount(async () => {
-        data = await fetchEndpoint('/api/posts')
-    })
 </script>
 
 <main class="py-8 px-8 xl:px-[20%]">

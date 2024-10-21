@@ -3,8 +3,7 @@ import type { AuthManager, User, UserStore } from "./singleton";
 import { error, json, redirect, type RequestEvent } from "@sveltejs/kit";
 import jwt from 'jsonwebtoken';
 import { JWT_SECRET } from '$env/static/private'
-
-const refreshPath = '/api/refresh'
+import { ACCESS_TOKEN_COOKIE_NAME, REFRESH_PATH, REFRESH_TOKEN_COOKIE_NAME } from "$lib/CONFIG";
 
 /**
  * Handles mostly authentication / authorization through cookies and a RequestEvent.
@@ -23,7 +22,7 @@ export class AuthManagement implements AuthManager {
 
     async getUserId(e: RequestEvent) : Promise<number> {
         
-        const accessToken = e.cookies.get('access-token') ?? undefined
+        const accessToken = e.cookies.get(ACCESS_TOKEN_COOKIE_NAME) ?? undefined
 
         // No access token cookie
         if (!accessToken) {
@@ -65,7 +64,7 @@ export class AuthManagement implements AuthManager {
 
     async isAccessTokenValid(e: RequestEvent): Promise<boolean> {
 
-        const accessToken = e.cookies.get('access-token') ?? undefined
+        const accessToken = e.cookies.get(ACCESS_TOKEN_COOKIE_NAME) ?? undefined
 
         // No access token cookie
         if (!accessToken) {
@@ -87,8 +86,8 @@ export class AuthManagement implements AuthManager {
     removeAllCookies(e: RequestEvent) {
 
         // Deleting the cookies set in the authentication process
-        e.cookies.delete('access-token', { path: '/' })
-        e.cookies.delete('refresh-token', { path: refreshPath,  httpOnly: true })
+        e.cookies.delete(ACCESS_TOKEN_COOKIE_NAME, { path: '/' })
+        e.cookies.delete(REFRESH_TOKEN_COOKIE_NAME, { path: REFRESH_PATH,  httpOnly: true })
 
     }
 
@@ -102,7 +101,7 @@ export class AuthManagement implements AuthManager {
     async handleRefresh(e: RequestEvent) {
 
         console.log('Refreshing tokens')
-        const refreshToken = e.cookies.get('refresh-token') ?? undefined;
+        const refreshToken = e.cookies.get(REFRESH_TOKEN_COOKIE_NAME) ?? undefined;
 
         // No refresh token cookie
         if (!refreshToken) {
@@ -127,15 +126,15 @@ export class AuthManagement implements AuthManager {
     }
 
     private setAccessToken(e: RequestEvent, userId: string) {
-        e.cookies.set('access-token', jwt.sign({ id: userId }, JWT_SECRET, {expiresIn: 10}), {
+        e.cookies.set(ACCESS_TOKEN_COOKIE_NAME, jwt.sign({ id: userId }, JWT_SECRET, {expiresIn: 10}), {
             path: '/',
             httpOnly: true
         });
     }
 
     private setRefreshToken(e: RequestEvent, userId: string) {
-        e.cookies.set('refresh-token', jwt.sign({ id: userId }, JWT_SECRET, {expiresIn: '7d'}), {
-            path: refreshPath,
+        e.cookies.set(REFRESH_TOKEN_COOKIE_NAME, jwt.sign({ id: userId }, JWT_SECRET, {expiresIn: '7d'}), {
+            path: REFRESH_PATH,
             httpOnly: true
         });
     }
