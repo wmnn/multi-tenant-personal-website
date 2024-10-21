@@ -1,79 +1,31 @@
-import { getAuthManager, getDB } from "$lib/server/singleton.js";
-import { json } from "@sveltejs/kit";
+import { getDB, type PostBeforeSaving, type Post } from "$lib/server/singleton.js";
+import { json, type RequestEvent } from "@sveltejs/kit";
 import { randomUUID } from "crypto";
 import fs from 'fs';
 
 /** @type {import('./$types').RequestHandler} */
-export async function GET(e) {
-
-    // Protected route needs access token checking
-    if (!await getAuthManager().isAccessTokenValid(e)) {
-        return json({
-            status : 401
-        });
-    }
-
-    return json({
-        status: 200
-    });
-
-}
-
-/** @type {import('./$types').RequestHandler} */
 export async function POST(event) {
 
-    console.log('Before checking access token')
-    if (!await getAuthManager().isAccessTokenValid(event)) {
-
-        console.log('Returning json response with status code 401')
-        return json({
-            status: 401
-        })
-    }
-
-    console.log('Writing image')
     const formData = await event.request.formData();
-    const title = formData.get('title') as string ?? ''
-    const content = formData.get('content') as string ?? ''
-    const thumbnail = formData.get('thumbnail') as File;
+    const post = getPost(formData, event);
 
     // Serving public image
-    if (title == '' || content == '') {
+    if (!isPostTitleAndContentValid(post)) {
         return json({
             status: 501
         })
     }
-    if (!thumbnail) {
-        // Writing data to database
-        const postId = await getDB().createPost({
-            title: title,
-            content: content,
-            author: (event.locals.userId as number),
-            thumbnailHash: '',
-            createdAt: new Date().toISOString()
-        })
-        return json({
-            status: 200,
-            postUrl: `/posts/${postId}`
-        })
-    }
 
-    const buffer = Buffer.from(await thumbnail.arrayBuffer()); 
-    const thumbnailId = randomUUID() + thumbnail.type.split('/')[1];
-    const filePath = `./static/images/${thumbnailId}`;
-    fs.writeFileSync(filePath, buffer); // Write the Buffer directly
+    /*if (post.file) {
+        post.thumbnailHash = await writeFileToStaticFolder(post.file);
+    } else {*/
+    post.thumbnailHash = ''
+    //}
 
-    console.log('Saving new post')
     // Writing data to database
-    const postId = await getDB().createPost({
-        title: title,
-        content: content,
-        author: (event.locals.userId as number),
-        thumbnailHash: thumbnailId,
-        createdAt: new Date().toISOString()
-    })
+    post.id = await getDB().createPost(post)
 
-    if (postId == -1) {
+    if (post.id == -1) {
         return json({
             status: 500,
         })
@@ -81,7 +33,66 @@ export async function POST(event) {
 
     return json({
         status: 200,
-        postUrl: `/posts/${postId}`
+        postUrl: `/posts/${post.id}`
     })
     
 };
+
+function isPostTitleAndContentValid(post: Post): boolean {
+
+    if (post.title == '' || post.content == '') return false;
+    return true;
+
+}
+async function writeFileToStaticFolder(file: File): Promise<string> {
+
+    console.log('Writing image')
+    const buffer = Buffer.from(await file.arrayBuffer()); 
+    const thumbnailHash = randomUUID() + file.type.split('/')[1];
+    const filePath = `./static/images/${thumbnailHash}`;
+    fs.writeFileSync(filePath, buffer); // Write the Buffer directly
+    return thumbnailHash;
+
+}
+function getPost(formData: FormData, e: RequestEvent): PostBeforeSaving {
+
+    return {
+        id: formData.get('id') as any ?? -1,
+        title: formData.get('title') as string ?? '',
+        content: formData.get('content') as string ?? '',
+        author: (e.locals.userId as number),
+        createdAt: new Date().toISOString(),
+        file: formData.get('thumbnail') as File
+    }
+}
+
+/** @type {import('./$types').RequestHandler} */
+export async function PUT(event) {
+
+    const formData = await event.request.formData();
+    const post = getPost(formData, event);
+
+    // Serving public image
+    if (post.title == '' || post.content == '') {
+        return json({
+            status: 501
+        })
+    }
+
+    post.thumbnailHash = ''
+
+    // Writing data to database
+    post.id = await getDB().updatePost(post)
+
+    if (post.id == -1) {
+        return json({
+            status: 500,
+        })
+    }
+
+    return json({
+        status: 200,
+        postUrl: `/posts/${post.id}`
+    })
+
+}

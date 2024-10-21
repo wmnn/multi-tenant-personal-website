@@ -66,6 +66,8 @@ export class Sqlite3Db implements DB, UserStore {
 
     async createPost(post: Post): Promise<number> {
         
+        console.log('Saving new post in database')
+
         return new Promise(resolve => { 
             this.db.run(
                 `INSERT INTO posts(title, content, author, thumbnailHash, createdAt) VALUES (?, ?, ?, ?, ?)`, 
@@ -91,6 +93,26 @@ export class Sqlite3Db implements DB, UserStore {
 
             resolve(post);
         }))
+
+    }
+
+    async updatePost(post: Post): Promise<number> {
+
+        console.log('Updating post in database ' + JSON.stringify(post))
+
+        return new Promise(resolve => { 
+            this.db.run(
+                `UPDATE posts SET title = ?, content = ?, thumbnailHash = ? WHERE id = ?`, 
+                [ post.title, post.content, post.thumbnailHash, post.id], 
+                function(err: any) {
+                    if (err) return resolve(-1);
+                    
+                    // this.changes == 1 => one row is affected
+                    if (this.changes == 1) return resolve(post.id!);
+                    resolve(-1);
+                }
+            );
+        })
 
     }
 

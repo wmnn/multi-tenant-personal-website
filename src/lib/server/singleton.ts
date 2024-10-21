@@ -11,6 +11,7 @@ export interface DB {
     createPost(post: Post): Promise<number>
     getPost(postId: number): Promise<Post | undefined>
     getPosts(count: number, latestFlag: boolean) : Promise<Post[]>
+    updatePost(post: Post): Promise<number>
 
 }
 
@@ -47,8 +48,12 @@ export interface Post {
     title: string,
     content: string,
     thumbnailHash?: string,
-    author: number,
-    createdAt: string
+    author?: number,
+    createdAt?: string,
+}
+
+export interface PostBeforeSaving extends Post {
+    file?: File
 }
 
 export function getDB() : DB {
