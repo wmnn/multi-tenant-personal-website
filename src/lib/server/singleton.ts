@@ -12,6 +12,7 @@ export interface DB {
     getPost(postId: number): Promise<Post | undefined>
     getPosts(count: number, latestFlag: boolean) : Promise<Post[]>
     updatePost(post: Post): Promise<number>
+    deletePost(postId: number): Promise<boolean>
 
 }
 

@@ -96,3 +96,27 @@ export async function PUT(event) {
     })
 
 }
+
+/** @type {import('./$types').RequestHandler} */
+export async function DELETE(event) {
+
+    const formData = await event.request.formData();
+    const postId = formData.get('id') ?? -1;
+
+    if (postId == -1) {
+        return json({
+            status: 500,
+        })
+    }
+
+    if (!await getDB().deletePost(postId as any)) {
+        return json({
+            status: 500,
+        })
+    }
+
+    return json({
+        status: 200
+    })
+
+}

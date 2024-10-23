@@ -116,6 +116,26 @@ export class Sqlite3Db implements DB, UserStore {
 
     }
 
+    async deletePost(postId: number): Promise<boolean> {
+
+        console.log('Deleting post in database ' + postId)
+
+        return new Promise(resolve => { 
+            this.db.run(
+                `DELETE FROM posts WHERE id = ?`, 
+                [ postId ], 
+                function(err: any) {
+                    if (err) return resolve(false);
+                    
+                    // this.changes == 1 => one row is affected
+                    if (this.changes == 1) return resolve(true);
+                    resolve(false);
+                }
+            );
+        })
+
+    }
+
     async getPosts(count: number, latestFlag: boolean) : Promise<Post[]> {
 
         if (latestFlag) {
