@@ -1,4 +1,4 @@
-import type { DB, User, UserStore, Post } from "./singleton";
+import type { DB, User, UserStore, Post, CategoryEntry } from "./singleton";
 
 import sqlite3 from 'sqlite3';
 import crypto from 'crypto'
@@ -27,7 +27,6 @@ export class Sqlite3Db implements DB, UserStore {
                     title	TEXT NOT NULL,
                     content	TEXT NOT NULL,
                     author	INTEGER NOT NULL,
-                    thumbnailHash	TEXT NOT NULL,
                     createdAt	TEXT NOT NULL
                 ); 
             `);
@@ -45,6 +44,14 @@ export class Sqlite3Db implements DB, UserStore {
                     stmt.finalize();
                 }
             })
+
+            // Creating categories table
+            this.db.run(`CREATE TABLE IF NOT EXISTS categories (
+                id INTEGER NOT NULL,
+                elementId INTEGER NOT NULL, 
+                position INTEGER NOT NULL,
+                PRIMARY KEY(id, position)
+            )`);
         
         });
 
@@ -66,13 +73,13 @@ export class Sqlite3Db implements DB, UserStore {
 
     async createPost(post: Post): Promise<number> {
         
-        console.log('Saving new post in database')
+        console.log('Saving new post in database ' + JSON.stringify(post))
 
         return new Promise(resolve => { 
             this.db.run(
-                `INSERT INTO posts(title, content, author, thumbnailHash, createdAt) VALUES (?, ?, ?, ?, ?)`, 
-                [ post.title, post.content, post.author, post.thumbnailHash, post.createdAt ?? new Date().toISOString()], 
-                function(err: any) {
+                `INSERT INTO posts(title, content, author, createdAt) VALUES (?, ?, ?, ?)`, 
+                [ post.title, post.content, post.author, new Date().toISOString()], 
+                function (err: any) {
                     if (err) {
                         resolve(-1);
                     }
@@ -102,8 +109,8 @@ export class Sqlite3Db implements DB, UserStore {
 
         return new Promise(resolve => { 
             this.db.run(
-                `UPDATE posts SET title = ?, content = ?, thumbnailHash = ? WHERE id = ?`, 
-                [ post.title, post.content, post.thumbnailHash, post.id], 
+                `UPDATE posts SET title = ?, content = ? WHERE id = ?`, 
+                [ post.title, post.content, post.id], 
                 function(err: any) {
                     if (err) return resolve(-1);
                     
@@ -136,29 +143,64 @@ export class Sqlite3Db implements DB, UserStore {
 
     }
 
-    async getPosts(count: number, latestFlag: boolean) : Promise<Post[]> {
+    async getPosts(query: string) : Promise<Post[]> {
 
-        if (latestFlag) {
-            return await new Promise(resolve => this.db.all('SELECT * FROM posts ORDER BY createdAt DESC LIMIT ?', [count], (err, posts: Post[]) => {
-                if (err) {
-                    console.error(err)
-                    return resolve([]);
-                }
-                resolve(posts);
-            }))
-        } else {
-            return await new Promise(resolve => this.db.all('SELECT * FROM posts LIMIT ?', [count], (err, posts: Post[]) => {
-                if (err) {
-                    console.error(err)
-                    return resolve([]);
-                }
-                resolve(posts);
-            }))
-        }
+     
+        return await new Promise(resolve => this.db.all('SELECT * FROM posts WHERE title LIKE ? ORDER BY createdAt DESC LIMIT 20', [`%${query}%`], (err, posts: Post[]) => {
+            if (err) {
+                console.error(err)
+                return resolve([]);
+            }
+            resolve(posts);
+        }))
+           
     }
 
     private createHash(stringToBeHashed: string) {
         return crypto.createHash('md5').update(stringToBeHashed).digest('hex')
+    }
+    async updateCategory(categoryId: number, data: Array<CategoryEntry>): Promise<any> {
+
+        console.log('Deleting category entries of category id ' + categoryId)
+        await new Promise(resolve => { 
+            this.db.run(
+                `DELETE FROM categories WHERE id = ?`, 
+                [ categoryId ], 
+                function(err: any) {
+                    if (err) return resolve(false);
+                    
+                    // this.changes == 1 => one row is affected
+                    if (this.changes > 0) return resolve(true);
+                    resolve(false);
+                }
+            );
+        })
+
+        if (data.length == 0) return;
+        console.log('Updating category ' + categoryId + ' ' + JSON.stringify(data));
+        return new Promise(resolve => { 
+
+            const stringToAdd = data.map(_ => '?,?,?').join('),(')
+            const sqlStatement = `INSERT INTO categories(id, elementId, position) VALUES (${stringToAdd});`;
+
+            const values: Array<any> = data.reduce((acc, obj) => {
+                console.log(obj)
+                acc.push(categoryId);
+                acc.push(obj.postId);
+                acc.push(obj.position);
+                return acc;
+            }, [] as any);
+
+            this.db.run(sqlStatement, values, function(err: any) {
+                if (err) {
+                    resolve(-1);
+                }
+                // get the last insert id
+                console.log(`A row has been inserted with rowid ${this.lastID}`);
+                resolve(this.lastID);
+            });
+        })
+
     }
 
 }

@@ -1,6 +1,6 @@
 <script>
-    import PostConfigurator from "$lib/client/PostConfigurator.svelte";
+    import PostConfiguratorJSON from "$lib/client/PostConfiguratorJSON.svelte";
 
 </script>
 
-<PostConfigurator />
+<PostConfiguratorJSON />

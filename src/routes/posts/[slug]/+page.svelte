@@ -1,7 +1,7 @@
 <script lang="ts">
     import Markdown from "$lib/client/Markdown.svelte";
     import Button from "$lib/client/Button.svelte";
-    import PostConfigurator from "$lib/client/PostConfigurator.svelte";
+    import PostConfiguratorJSON from "$lib/client/PostConfiguratorJSON.svelte";
 
     export let data;
     let isInEditMode = false
@@ -17,5 +17,5 @@
         <Markdown title={data.post?.title} content={data.post?.content}/>
     </div>
 {:else}
-    <PostConfigurator title={data.post?.title} content={data.post?.content} isEditingPost={true} postId={data.slug}/>
+    <PostConfiguratorJSON title={data.post?.title} content={data.post?.content} isEditingExistingPost={true} postId={data.slug}/>
 {/if}

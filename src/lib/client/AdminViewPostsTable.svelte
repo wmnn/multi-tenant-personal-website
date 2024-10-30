@@ -25,7 +25,7 @@
 </script>
 
 <div class="border-[1px] rounded-xl">
-    {#each posts as { id, title, content, thumbnailHash, createdAt }, i}
+    {#each posts as { id, title, createdAt }, i}
         <div>
             <hr>
             <div class="flex justify-between p-4 gap-4">

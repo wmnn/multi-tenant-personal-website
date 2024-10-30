@@ -10,10 +10,16 @@ export interface DB {
 
     createPost(post: Post): Promise<number>
     getPost(postId: number): Promise<Post | undefined>
-    getPosts(count: number, latestFlag: boolean) : Promise<Post[]>
+    getPosts(query: string) : Promise<Post[]>
     updatePost(post: Post): Promise<number>
     deletePost(postId: number): Promise<boolean>
+    updateCategory(postId: number, json: any): Promise<any>
+}
 
+export interface CategoryEntry {
+    categoryId?: number,
+    postId: number,
+    position?: number
 }
 
 /**
@@ -47,14 +53,10 @@ export interface User {
 export interface Post {
     id?: number,
     title: string,
-    content: string,
-    thumbnailHash?: string,
+    content?: string,
     author?: number,
     createdAt?: string,
-}
-
-export interface PostBeforeSaving extends Post {
-    file?: File
+    subPosts?: Post[]
 }
 
 export function getDB() : DB {

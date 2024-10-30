@@ -1,9 +1,9 @@
 <script lang="ts">
     import AdminViewPostsTable from '$lib/client/AdminViewPostsTable.svelte';
-import Button from '$lib/client/Button.svelte';
+    import Button from '$lib/client/Button.svelte';
     import Input from '$lib/client/Input.svelte';
+    import SearchPostsInput from '$lib/client/SearchPostsInput.svelte';
     export let data;
-    let searchQuery: string;
 </script>
 
 <main class="py-8 px-8 xl:px-[20%]">
@@ -12,9 +12,7 @@ import Button from '$lib/client/Button.svelte';
     <hr>
     <h2 class="py-4">Posts</h2>
 
-    <div class="py-2 max-w-[360px]">
-        <Input value={searchQuery} placeholder="Search"/>
-    </div>
+    <SearchPostsInput bind:shownPosts={data.posts}/>
     
     <AdminViewPostsTable posts={data.posts} />
     

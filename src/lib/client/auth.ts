@@ -17,7 +17,7 @@ export async function request(endpoint: string, options?: RequestInit) {
     // ----- Fetch first time -----
     const res = await operation();
 
-    console.log('First attempt ' + JSON.stringify(res));
+    // console.log('First attempt ' + JSON.stringify(res));
 
     // Successfull fetch
     if (res.status !== 401) {
@@ -25,11 +25,11 @@ export async function request(endpoint: string, options?: RequestInit) {
     }
 
     // ----- Trying to retrieve new access token -----
-    console.log('Trying to refresh access token')
+    // console.log('Trying to refresh access token')
     await new Promise(resolve => setTimeout(resolve, 50))
     const refresh = await (await fetch(REFRESH_PATH)).json()
     
-    console.log('Refresh response ' + JSON.stringify(refresh));
+    // console.log('Refresh response ' + JSON.stringify(refresh));
 
     // Couldn't retrieve new access token
     if (refresh.status !== 200) {
@@ -40,7 +40,7 @@ export async function request(endpoint: string, options?: RequestInit) {
     // ----- Fetch the second time -----
     const res2 = await operation();
 
-    console.log('Second attempt ' + JSON.stringify(res2));
+    // console.log('Second attempt ' + JSON.stringify(res2));
 
     // Successfull second fetch
     if (res2.status !== 401) {

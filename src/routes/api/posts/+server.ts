@@ -1,26 +1,35 @@
-import { getDB, type PostBeforeSaving, type Post } from "$lib/server/singleton.js";
+import type { CreateAndUpdatePostReqData } from "$lib/client/requestTypes.js";
+import { getDB, type Post } from "$lib/server/singleton.js";
 import { json, type RequestEvent } from "@sveltejs/kit";
 import { randomUUID } from "crypto";
 import fs from 'fs';
 
 /** @type {import('./$types').RequestHandler} */
+export async function GET(event) {
+
+    const query = event.url.searchParams.get('searchQuery') ?? ''
+    
+    return json({
+        status: 200,
+		posts: await getDB().getPosts(query as any)
+	});
+  
+};
+
+/** @type {import('./$types').RequestHandler} */
 export async function POST(event) {
 
-    const formData = await event.request.formData();
-    const post = getPost(formData, event);
+    const reqData: CreateAndUpdatePostReqData = await event.request.json();
+    console.log(reqData)
+    const post = reqData as Post;
+    post.author = event.locals.userId;
 
     // Serving public image
-    if (!isPostTitleAndContentValid(post)) {
+    if (!isPostTitleAndContentValid(post) || post.author == -1) {
         return json({
             status: 501
         })
     }
-
-    /*if (post.file) {
-        post.thumbnailHash = await writeFileToStaticFolder(post.file);
-    } else {*/
-    post.thumbnailHash = ''
-    //}
 
     // Writing data to database
     post.id = await getDB().createPost(post)
@@ -30,6 +39,8 @@ export async function POST(event) {
             status: 500,
         })
     }
+     
+    await getDB().updateCategory(post.id, reqData.categoryEntries);
 
     return json({
         status: 200,
@@ -54,32 +65,20 @@ async function writeFileToStaticFolder(file: File): Promise<string> {
     return thumbnailHash;
 
 }
-function getPost(formData: FormData, e: RequestEvent): PostBeforeSaving {
-
-    return {
-        id: formData.get('id') as any ?? -1,
-        title: formData.get('title') as string ?? '',
-        content: formData.get('content') as string ?? '',
-        author: (e.locals.userId as number),
-        createdAt: new Date().toISOString(),
-        file: formData.get('thumbnail') as File
-    }
-}
 
 /** @type {import('./$types').RequestHandler} */
 export async function PUT(event) {
 
-    const formData = await event.request.formData();
-    const post = getPost(formData, event);
+    const reqData: CreateAndUpdatePostReqData = await event.request.json();
+    const post = reqData as Post;
+    post.author = event.locals.userId;
 
     // Serving public image
-    if (post.title == '' || post.content == '') {
+    if (post.title == '' || post.content == '' || post.author == -1) {
         return json({
             status: 501
         })
     }
-
-    post.thumbnailHash = ''
 
     // Writing data to database
     post.id = await getDB().updatePost(post)
@@ -90,6 +89,8 @@ export async function PUT(event) {
         })
     }
 
+    await getDB().updateCategory(post.id, reqData.categoryEntries);
+        
     return json({
         status: 200,
         postUrl: `/posts/${post.id}`
