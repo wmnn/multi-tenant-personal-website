@@ -7,18 +7,16 @@
     import { createAndUpdatePostReq } from "./requests";
     import SubPostsSelector from "./SubPostsSelector.svelte";
 
-    export let title: string = ''
-    export let content: string = ''
+    export let post: Post;
     export let isEditingExistingPost = false // Is true on already created posts
-    export let postId: number = -1 // Is -1 on posts that are not created yet
 
     let textarea: any
     let isInEditMode = true // true => edit the post, false => preview the post
-    let categoryPosts: Array<Post> = []
+    let categoryPosts: Array<Post> = post.subPosts ?? []
 
     async function handleSubmit(e: any) {
         e.preventDefault();
-        await createAndUpdatePostReq(postId, title, content, isEditingExistingPost, categoryPosts)
+        await createAndUpdatePostReq(post.id!, post.title, post.content!, isEditingExistingPost, categoryPosts)
     }
 
     function addHeadingToTextarea(string: string) {
@@ -42,10 +40,10 @@
         <form class:hidden={!isInEditMode} class="flex flex-col justify-center w-full" enctype="multipart/form-data" on:submit={e => handleSubmit(e)}>
         
             <label for="title">Title</label>
-            <Input placeholder="title" name="title" bind:value={title}/>
+            <Input placeholder="title" name="title" bind:value={post.title}/>
             
             <label for="content">Content</label>        
-            <textarea name="content" class="min-h-[250px] p-2" bind:this={textarea} bind:value={content}></textarea>
+            <textarea name="content" class="min-h-[250px] p-2" bind:this={textarea} bind:value={post.content}></textarea>
         
             <SubPostsSelector bind:selectedPosts={categoryPosts}/>
         
@@ -57,7 +55,7 @@
 
         {#if !isInEditMode}
             <div class="w-full">
-                <Markdown title={title} content={textarea.value}/>    
+                <Markdown title={post.title} content={textarea.value}/>    
             </div>
         {/if}
 
