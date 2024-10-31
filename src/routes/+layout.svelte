@@ -7,7 +7,7 @@
 </script>
 
 <div class="app">
-	<Header isUserLoggedIn={data.isUserLoggedIn}/>
+	<Header isUserLoggedIn={data.isUserLoggedIn} headerPosts={data.headerPosts} />
 
 	<main>
 		<slot />

@@ -1,24 +1,31 @@
 <script lang="ts">
+    import HeaderCategory from "./HeaderCategory.svelte";
+	import HeaderItem from "./HeaderItem.svelte";
+
 	export let isUserLoggedIn;
+	export let headerPosts;
 </script>
 <header>
 	<nav>
 		<ul class="flex justify-end gap-8 py-8 px-8 border-b-2 border-black">
-			<li>
-				<a href="/">Home</a>
-			</li>
+
+			{#each headerPosts as post}
+				<HeaderCategory post={post} />
+			{/each}
+
+			<HeaderItem href={'/'} title={'Home'}/>
+
 			{#if isUserLoggedIn}
-				<li>
-					<a href="/admin">Admin</a>
-				</li>
-				<li>
-					<a href="/api/logout">LogOut</a>
-				</li>
+				<HeaderItem href={'/admin'} title={'Admin'}/>
+				<HeaderItem href={'/api/logout'} title={'LogOut'}/>
 			{:else}
-				<li>
-					<a href="/login">Login</a>
-				</li>
+				<HeaderItem href={'/login'} title={'Login'}/>
 			{/if}
+			
 		</ul>
 	</nav>
 </header>
+
+<style>
+	
+</style>

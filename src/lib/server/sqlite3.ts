@@ -57,6 +57,20 @@ export class Sqlite3Db implements DB, UserStore {
 
     }
 
+    async getCategories(): Promise<Post[]> {
+        
+        const ids: any = (await new Promise(resolve => this.db.all('SELECT DISTINCT id FROM categories', [], (err, row: any) => {
+            if (err || row == undefined) {
+                return resolve(undefined);
+            }
+
+            console.log(row)
+            resolve(row);
+        })) as any).map((o : any) => o.id);
+
+        return await Promise.all(ids.map((id: number) => this.getPost(id)));
+    }
+
     async findUser(email: string, password: string) : Promise<undefined | User> {
 
         return await new Promise(resolve => this.db.get('SELECT * FROM users WHERE email = ? AND password = ?', [email, this.createHash(password)], (err, user: User | undefined) => {
@@ -93,14 +107,32 @@ export class Sqlite3Db implements DB, UserStore {
 
     async getPost(postId: number): Promise<Post | undefined> {
 
-        return await new Promise(resolve => this.db.get('SELECT * FROM posts WHERE id = ?', [postId], (err, post: Post | undefined) => {
+        const post: Post | undefined = await new Promise(resolve => this.db.get('SELECT * FROM posts WHERE id = ?', [postId], (err, post: Post | undefined) => {
             if (err || post == undefined) {
                 return resolve(undefined);
             }
 
             resolve(post);
         }))
+        if (post == undefined) return undefined;
 
+        const subPostsPromises: Array<Promise<Post | undefined>> = []
+        await new Promise(resolve => {
+            this.db.each('SELECT * FROM categories WHERE id = ? ORDER BY position', [postId], async (err, row: any) => {
+                if (err || row == undefined) {
+                    return;
+                }
+                subPostsPromises.push(this.getPost(row.elementId));
+            }, () => {
+                resolve(true);
+            })
+        });
+
+        if (subPostsPromises.length == 0) return post;
+        const results : any = await Promise.all(subPostsPromises);
+        post.subPosts = results.filter((o: any) => o !== undefined) as Post[];
+        console.log(post)
+        return post;
     }
 
     async updatePost(post: Post): Promise<number> {

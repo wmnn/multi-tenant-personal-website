@@ -1,7 +1,6 @@
 <script lang="ts">
     import AdminViewPostsTable from '$lib/client/AdminViewPostsTable.svelte';
     import Button from '$lib/client/Button.svelte';
-    import Input from '$lib/client/Input.svelte';
     import SearchPostsInput from '$lib/client/SearchPostsInput.svelte';
     export let data;
 </script>
@@ -23,6 +22,7 @@
     </a>
 
     <h2>Categories</h2>
+    <AdminViewPostsTable posts={data.categories} />
 
     <a href="/posts/create">
         <Button>Add a new category</Button>

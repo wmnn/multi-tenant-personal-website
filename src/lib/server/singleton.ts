@@ -13,6 +13,7 @@ export interface DB {
     getPosts(query: string) : Promise<Post[]>
     updatePost(post: Post): Promise<number>
     deletePost(postId: number): Promise<boolean>
+    getCategories(): Promise<Post[]>
     updateCategory(postId: number, json: any): Promise<any>
 }
 
