@@ -1,9 +1,7 @@
 
 <script lang="ts">
-
-    import type { Post } from "$lib/server/singleton";
+    
     import { onMount, tick } from "svelte";
-    import Input from "./Input.svelte";
     import { request } from "./auth";
 
     export let shownPosts

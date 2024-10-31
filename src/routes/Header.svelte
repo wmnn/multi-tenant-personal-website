@@ -6,14 +6,19 @@
 	export let headerPosts;
 </script>
 <header>
-	<nav>
-		<ul class="flex justify-end gap-8 py-8 px-8 border-b-2 border-black">
+	<nav class={`flex justify-between gap-8 py-8 px-8 ${/*border-b-2*/''} border-black items-center`}>
+
+		<a href={`/`}>
+			<h1>
+				{`Peter Würdemann`}
+			</h1>
+		</a>
+		
+		<ul class="flex gap-8">
 
 			{#each headerPosts as post}
 				<HeaderCategory post={post} />
 			{/each}
-
-			<HeaderItem href={'/'} title={'Home'}/>
 
 			{#if isUserLoggedIn}
 				<HeaderItem href={'/admin'} title={'Admin'}/>

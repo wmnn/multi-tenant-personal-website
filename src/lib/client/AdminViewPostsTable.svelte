@@ -1,5 +1,5 @@
 <script lang="ts">
-    import DeleteIcon from '$lib/client/DeleteIcon.svelte';
+    import DeleteIcon from '$lib/client/icons/DeleteIcon.svelte';
     import { request } from './auth';
     import Button from './Button.svelte';
     import Popup from './Popup.svelte';
