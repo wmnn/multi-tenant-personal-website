@@ -6,16 +6,12 @@
 
 </script>
 
-<div class="app">
+<div class="app flex min-h-[100vh]">
 	<Header isUserLoggedIn={data.isUserLoggedIn} headerPosts={data.headerPosts} />
-
-	<main>
+	<div class="bg-[#e5e7eb] w-[1px]" />
+	<main class="grow py-8">
 		<slot />
 	</main>
-
-	<footer class="py-8 border-t-2 border-black flex justify-center">
-		<p>Some Footer</p>
-	</footer>
 </div>
 
 <style>
