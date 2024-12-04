@@ -30,7 +30,7 @@
 
 <div class="flex"> 
 
-    <main class="flex justify-start w-full flex-col xl:pl-[20%] px-8 xl:px-0 items-start">
+    <main class="flex justify-start w-full flex-col xl:pl-[10%] px-8 xl:px-0 items-start">
 
         <div class="flex justify-end gap-1 mt-8 w-full">
             <Button handleClick={() => isInEditMode = true} classes={`max-w-24 ${isInEditMode ? 'bg-slate-100' : ''}`}>Edit</Button>

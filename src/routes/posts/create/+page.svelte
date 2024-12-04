@@ -1,6 +1,8 @@
 <script>
     import PostConfiguratorJSON from "$lib/client/PostConfiguratorJSON.svelte";
-
 </script>
 
-<PostConfiguratorJSON />
+<PostConfiguratorJSON post={{
+    id: -1,
+    title: ''
+}}/>

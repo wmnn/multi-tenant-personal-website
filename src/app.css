@@ -39,6 +39,10 @@ pre, code {
   font-family: Menlo, Monaco, "Courier New", monospace;
 }
 
+html {
+    scroll-behavior: smooth;
+}
+
 pre {
     background-color: #fafafa;
     font-size: .8rem;
@@ -48,7 +52,12 @@ pre {
     margin-bottom: 8px;
 }
 
-pre, blockquote {
+pre {
     border: 1px solid #999;
     page-break-inside: avoid;
-  }
+}
+
+blockquote {
+    border-left: 5px solid #ccc;
+    padding: 8px 0 8px 20px;
+}

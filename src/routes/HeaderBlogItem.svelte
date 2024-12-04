@@ -16,8 +16,8 @@
     on:mouseenter={() => isOpenOnHoverAllowed ? isDropdownShown = true : ''} 
     on:mouseleave={() => isOpenOnHoverAllowed ? isDropdownShown = false : ''}>
     
-    <button class="flex items-center text-reallylight">
-        {#if posts.length > 0} 
+    <button class="flex items-center text-reallylight gap-[4px]">
+        {#if isMainElement || posts.length > 0} 
             <button 
             class:rotate-90={isDropdownShown} class="transition-all" 
             on:click={() => isDropdownShown = !isDropdownShown}>
