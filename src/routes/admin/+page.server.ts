@@ -4,6 +4,7 @@ import { getDB } from '$lib/server/singleton.js';
 export async function load(e) {
 	return {
 		posts: await getDB().getPosts(''),
-		categories:  await getDB().getCategories()
+		categories:  await getDB().getCategories(),
+		about: await getDB().getContent('about')
 	};
 }

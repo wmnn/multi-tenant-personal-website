@@ -1,7 +1,7 @@
 <script lang="ts">
-    import AdminViewPostsTable from '$lib/client/AdminViewPostsTable.svelte';
-    import Button from '$lib/client/Button.svelte';
-    import SearchPostsInput from '$lib/client/SearchPostsInput.svelte';
+    import About from './About.svelte';
+    import Categories from './Categories.svelte';
+    import Posts from './Posts.svelte';
     export let data;
 </script>
 
@@ -9,23 +9,8 @@
     
     <h1 class="pb-4">Admin Panel</h1>
     <hr>
-    <h2 class="py-4">Posts</h2>
-
-    <SearchPostsInput bind:shownPosts={data.posts}/>
-    
-    <AdminViewPostsTable posts={data.posts} />
-    
-    <a href="/posts/create">
-        <Button>
-            Create Post
-        </Button>
-    </a>
-
-    <h2>Categories</h2>
-    <AdminViewPostsTable posts={data.categories} />
-
-    <a href="/posts/create">
-        <Button>Add a new category</Button>
-    </a>
+    <About about={data.about ?? ''}/>
+    <Posts posts={data.posts}/>
+    <Categories categories={data.categories} />
     
 </main>

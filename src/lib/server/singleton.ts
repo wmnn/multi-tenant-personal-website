@@ -15,6 +15,9 @@ export interface DB {
     deletePost(postId: number): Promise<boolean>
     getCategories(): Promise<Post[]>
     updateCategory(postId: number, json: any): Promise<any>
+    getContent(key: string): Promise<string>
+    updateContent(key: string, value: string): Promise<boolean>
+
 }
 
 export interface CategoryEntry {

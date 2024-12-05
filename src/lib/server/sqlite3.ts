@@ -11,6 +11,11 @@ export class Sqlite3Db implements DB, UserStore {
     constructor() {
         this.db = new sqlite3.Database('db.sqlite3');
 
+        this.initTablesAndContent()
+
+    }
+
+    private async initTablesAndContent() {
         this.db.serialize(() => {
 
             // Creating user table
@@ -52,9 +57,15 @@ export class Sqlite3Db implements DB, UserStore {
                 position INTEGER NOT NULL,
                 PRIMARY KEY(id, position)
             )`);
+
+            this.db.run(`CREATE TABLE IF NOT EXISTS content (
+                key TEXT NOT NULL,
+                value TEXT NOT NULL,
+                PRIMARY KEY(key)
+            )`);
         
         });
-
+        this.createInitialContent()
     }
 
     async getCategories(): Promise<Post[]> {
@@ -233,6 +244,87 @@ export class Sqlite3Db implements DB, UserStore {
             });
         })
 
+    }
+
+    async getContent(key: string): Promise<string> {
+        return new Promise(resolve => this.db.get('SELECT value FROM content WHERE key = ?', [key], (err, row: any) => {
+            if (err || row == undefined) {
+                return resolve('');
+            }
+
+            resolve(row.value);
+        }))
+    }
+    async createContent(key: string, value: string): Promise<number> {
+        return new Promise(resolve => { 
+            this.db.run(
+                `INSERT INTO content(key, value) VALUES (?, ?)`, 
+                [ key, value ], 
+                function (err: any) {
+                    if (err) {
+                        resolve(-1);
+                    }
+                    // get the last insert id
+                    console.log(`A row has been inserted with rowid ${this.lastID}`);
+                    resolve(this.lastID);
+                }
+            );
+        })
+    }
+    async updateContent(key: string, value: string): Promise<boolean> {
+        return new Promise(resolve => { 
+            this.db.run(
+                `UPDATE content SET value = ? WHERE key = ?`, 
+                [ value, key ], 
+                function(err: any) {
+                    if (err) return resolve(false);
+                    
+                    // this.changes == 1 => one row is affected
+                    if (this.changes == 1) return resolve(true);
+                    resolve(false);
+                }
+            );
+        })
+    }
+    private async createInitialContent() {
+
+        let html = `
+        <h1 class="inline-block text-4xl">Hallo !</h1>
+        
+        <span class="text-xl">
+            Ich bin ein Webentwickler, welcher es liebt Nutzerschnittstellen zu erstellen und mit Daten zu arbeiten.<br>
+            <br>
+
+            <blockquote>
+                <i>
+                    Anything that can be Written in JavaScript, will Eventually be Written in JavaScript - Atwood's Law
+                </i>
+                
+            </blockquote> 
+
+            <br>
+
+            In meiner Freizeit spiele ich Fußball, beschäftige mich im Fitnessstudio oder gehe gerne Essen.
+        
+        </span>
+
+        <div class="max-h-[32px] flex justify-start gap-4 object-cover items-center">
+            <img src="/projects/typescript.png" alt="" width='32px' height='32px'/>
+            <img src="/projects/javascript.png" alt="" width='32px' height='32px'/>
+            <img src="/projects/svelte.svg" alt="" width='32px' height='32px'/>
+            <img src="/projects/react.svg" alt="" width='32px' height='32px'/>
+
+            
+            <img src="/projects/tailwind.png" alt="" width='32px' height='32px'/>
+
+            <img src="/projects/mysql.png" alt="" width='32px' height='32px'/>
+            <img src="/projects/mongo_db.jpeg" alt="" width='32px' height='32px'/>
+            <img src="/projects/firebase.svg" alt="" width='32px' height='32px'/>
+            <img src="/projects/github.svg" alt="" width='32px' height='32px'/>
+        </div>
+        
+        `
+        await this.createContent('about', html)
     }
 
 }
