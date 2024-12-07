@@ -2,7 +2,7 @@
     import Button from "$lib/client/Button.svelte";
     import Input from "$lib/client/Input.svelte";
     import Markdown from "$lib/client/Markdown.svelte";
-    import type { Post } from "$lib/server/singleton";
+    import type { Post } from "$lib/server/types";
     import PostConfiguratorHelpItems from "./PostConfiguratorHelpItems.svelte";
     import { createAndUpdatePostReq } from "./requests";
     import SubPostsSelector from "./SubPostsSelector.svelte";

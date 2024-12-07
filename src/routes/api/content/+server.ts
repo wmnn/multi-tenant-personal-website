@@ -1,8 +1,5 @@
-import type { CreateAndUpdatePostReqData } from "$lib/client/requestTypes.js";
-import { getDB, type Post } from "$lib/server/singleton.js";
+import { getDB } from "$lib/server/singleton.js";
 import { json, type RequestEvent } from "@sveltejs/kit";
-import { randomUUID } from "crypto";
-import fs from 'fs';
 
 /** @type {import('./$types').RequestHandler} */
 export async function GET(event) {

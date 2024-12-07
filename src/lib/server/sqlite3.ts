@@ -1,4 +1,4 @@
-import type { DB, User, UserStore, Post, CategoryEntry } from "./singleton";
+import type { DB, User, UserStore, Post, CategoryEntry } from "./types";
 
 import sqlite3 from 'sqlite3';
 import crypto from 'crypto'
@@ -62,6 +62,15 @@ export class Sqlite3Db implements DB, UserStore {
                 key TEXT NOT NULL,
                 value TEXT NOT NULL,
                 PRIMARY KEY(key)
+            )`);
+
+            this.db.run(`CREATE TABLE IF NOT EXISTS cvdata (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                position TEXT NOT NULL,
+                start TEXT NOT NULL,
+                end TEXT NOT NULL,
+                location TEXT NOT NULL,
+                experience TEXT NOT NULL
             )`);
         
         });

@@ -1,4 +1,4 @@
-import type { CategoryEntry, Post } from "$lib/server/singleton";
+import type { CategoryEntry, Post } from "$lib/server/types";
 import { request } from "./auth";
 import type { CreateAndUpdatePostReqData } from "./requestTypes";
 
