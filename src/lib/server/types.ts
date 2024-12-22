@@ -46,13 +46,14 @@ export interface AuthManager {
 }
 
 export interface KeyValueStore {
-    get(key: string): Promise<string>
+    get(key: string): Promise<string | undefined>
     set(key: string, value: string): Promise<boolean>
 }
 
 export interface UserStore {
 
     findUser(email: string, password: string): Promise<undefined | User>
+    createUser(email: string, password: string): Promise<boolean>
 
 }
 

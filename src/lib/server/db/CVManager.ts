@@ -1,4 +1,5 @@
-import type { CVDataEntry, DB, KeyValueStore } from "./types";
+import { KEYS } from "../../client/KEYS";
+import type { CVDataEntry, DB, KeyValueStore } from "../types";
 
 export interface CVData {
     workExperiences: CVDataEntry[],
@@ -8,8 +9,6 @@ export interface CVData {
 export interface CVManagerType {
     getCVData: () => Promise<CVData>
 }
-
-const CV_DATA_KEY = 'cv';
 
 export class CVManager implements CVManagerType {
     
@@ -21,7 +20,10 @@ export class CVManager implements CVManagerType {
 
     async getCVData(): Promise<CVData> {
         try {
-            return JSON.parse(await this.keyValueStore.get(CV_DATA_KEY));
+            return {
+                workExperiences: JSON.parse(await this.keyValueStore.get(KEYS.workexperience) ?? ''),
+                education: JSON.parse(await this.keyValueStore.get(KEYS.education) ?? '')
+            }
         } catch (_) {
             return {
                 workExperiences: [],
@@ -30,7 +32,4 @@ export class CVManager implements CVManagerType {
         }
     }
 
-    updateCVData() {
-
-    }
 }

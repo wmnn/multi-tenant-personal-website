@@ -1,5 +1,5 @@
 <script lang="ts">
-    import DownArrow from "./DownArrow.svelte";
+    import DownArrow from "../../lib/client/icons/DownArrow.svelte";
     export let about;
 
     let iconSize = '32px'   

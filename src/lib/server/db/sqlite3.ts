@@ -2,8 +2,6 @@ import type { DB, User, UserStore, Post, CategoryEntry, KeyValueStore } from "..
 
 import sqlite3 from 'sqlite3';
 import crypto from 'crypto'
-import { ADMIN_EMAIL, ADMIN_PASSWORD } from '$env/static/private'
-import type { CVData } from "../CVManager";
 
 export class Sqlite3Db implements DB, UserStore, KeyValueStore {
 
@@ -11,12 +9,10 @@ export class Sqlite3Db implements DB, UserStore, KeyValueStore {
 
     constructor() {
         this.db = new sqlite3.Database('db.sqlite3');
-
-        this.initTablesAndContent()
-
+        this.initTables()
     }
 
-    private async initTablesAndContent() {
+    private async initTables() {
         this.db.serialize(() => {
 
             // Creating user table
@@ -37,20 +33,6 @@ export class Sqlite3Db implements DB, UserStore, KeyValueStore {
                 ); 
             `);
 
-            // Create admin account if it doesn't exist
-            this.db.get('SELECT * FROM users WHERE email = ? AND password = ?;', [ADMIN_EMAIL, this.createHash(ADMIN_PASSWORD)], (err, user: User | undefined) => {
-                if (err || user == undefined) {
-                    const stmt = this.db.prepare(`
-                        INSERT INTO users(id, email, password) VALUES (1, $email, $password);
-                    `);
-                    stmt.run({
-                        $email: ADMIN_EMAIL, 
-                        $password: this.createHash(ADMIN_PASSWORD)
-                    });
-                    stmt.finalize();
-                }
-            })
-
             // Creating categories table
             this.db.run(`CREATE TABLE IF NOT EXISTS categories (
                 id INTEGER NOT NULL,
@@ -59,23 +41,12 @@ export class Sqlite3Db implements DB, UserStore, KeyValueStore {
                 PRIMARY KEY(id, position)
             )`);
 
-            this.db.run(`CREATE TABLE IF NOT EXISTS content (
+            this.db.run(`CREATE TABLE IF NOT EXISTS keyvaluestore (
                 key TEXT NOT NULL,
                 value TEXT NOT NULL,
                 PRIMARY KEY(key)
             )`);
-
-            this.db.run(`CREATE TABLE IF NOT EXISTS cvdata (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                position TEXT NOT NULL,
-                start TEXT NOT NULL,
-                end TEXT NOT NULL,
-                location TEXT NOT NULL,
-                experience TEXT NOT NULL
-            )`);
-        
         });
-        this.createInitialContent()
     }
 
     async getCategories(): Promise<Post[]> {
@@ -105,6 +76,25 @@ export class Sqlite3Db implements DB, UserStore, KeyValueStore {
         }))
     
     }
+
+    async createUser(email: string, password: string): Promise<boolean> {
+        // Create user if it doesn't exist yet
+        return await new Promise(resolve => this.db.get('SELECT * FROM users WHERE email = ? AND password = ?;', [email, this.createHash(password)], (err, user: User | undefined) => {
+            
+            if (err || user == undefined) {
+                const stmt = this.db.prepare(`
+                    INSERT INTO users(id, email, password) VALUES (1, $email, $password);
+                `);
+                stmt.run({
+                    $email: email, 
+                    $password: this.createHash(password)
+                });
+                stmt.finalize();
+            }
+            return resolve(true);
+        }))
+    }
+
 
     async createPost(post: Post): Promise<number> {
         
@@ -210,7 +200,7 @@ export class Sqlite3Db implements DB, UserStore, KeyValueStore {
     }
 
     private createHash(stringToBeHashed: string) {
-        return crypto.createHash('md5').update(stringToBeHashed).digest('hex')
+        return crypto.createHash('sha256').update(stringToBeHashed).digest('hex')
     }
     async updateCategory(categoryId: number, data: Array<CategoryEntry>): Promise<any> {
 
@@ -256,116 +246,53 @@ export class Sqlite3Db implements DB, UserStore, KeyValueStore {
 
     }
 
-    async get(key: string): Promise<string> {
-        return new Promise(resolve => this.db.get('SELECT value FROM content WHERE key = ?', [key], (err, row: any) => {
+    async get(key: string): Promise<string | undefined> {
+        return new Promise(resolve => this.db.get('SELECT value FROM keyvaluestore WHERE key = ?', [key], (err, row: any) => {
+            console.log(`Key value store getting key: ${key}`)
+
             if (err || row == undefined) {
-                return resolve('');
+                console.log(`Couldn't get value for key: ${key}`)
+                return resolve(undefined);
             }
+
+            console.log(`Value: ${row.value}`)
 
             resolve(row.value);
         }))
     }
-    async createContent(key: string, value: string): Promise<number> {
-        return new Promise(resolve => { 
-            this.db.run(
-                `INSERT INTO content(key, value) VALUES (?, ?)`, 
-                [ key, value ], 
-                function (err: any) {
-                    if (err) {
-                        resolve(-1);
-                    }
-                    // get the last insert id
-                    console.log(`A row has been inserted with rowid ${this.lastID}`);
-                    resolve(this.lastID);
-                }
-            );
-        })
-    }
+ 
     async set(key: string, value: string): Promise<boolean> {
-        return new Promise(resolve => { 
+        const success = await new Promise(resolve => { 
             this.db.run(
-                `UPDATE content SET value = ? WHERE key = ?`, 
-                [ value, key ], 
-                function(err: any) {
-                    if (err) return resolve(false);
+                `UPDATE keyvaluestore SET value = ? WHERE key = ?`, [ value, key ], function (err: any) {
+
+                    if (err) {
+                        return resolve(false);   
+                    }
                     
+                    console.log(this.changes)
                     // this.changes == 1 => one row is affected
                     if (this.changes == 1) return resolve(true);
                     resolve(false);
                 }
             );
         })
-    }
-    private async createInitialContent() {
+        console.log(success)
+        if (success) return new Promise(resolve => resolve (true));
 
-        let html = `
-        <h1 class="inline-block text-4xl">Hallo !</h1>
-        
-        <span class="text-xl">
-            Ich bin ein Webentwickler, welcher es liebt Nutzerschnittstellen zu erstellen und mit Daten zu arbeiten.<br>
-            <br>
-
-            <blockquote>
-                <i>
-                    Anything that can be Written in JavaScript, will Eventually be Written in JavaScript - Atwood's Law
-                </i>
-                
-            </blockquote> 
-
-            <br>
-
-            In meiner Freizeit spiele ich Fußball, beschäftige mich im Fitnessstudio oder gehe gerne Essen.
-        
-        </span>
-
-        <div class="max-h-[32px] flex justify-start gap-4 object-cover items-center">
-            <img src="/projects/typescript.png" alt="" width='32px' height='32px'/>
-            <img src="/projects/javascript.png" alt="" width='32px' height='32px'/>
-            <img src="/projects/svelte.svg" alt="" width='32px' height='32px'/>
-            <img src="/projects/react.svg" alt="" width='32px' height='32px'/>
-
-            
-            <img src="/projects/tailwind.png" alt="" width='32px' height='32px'/>
-
-            <img src="/projects/mysql.png" alt="" width='32px' height='32px'/>
-            <img src="/projects/mongo_db.jpeg" alt="" width='32px' height='32px'/>
-            <img src="/projects/firebase.svg" alt="" width='32px' height='32px'/>
-            <img src="/projects/github.svg" alt="" width='32px' height='32px'/>
-        </div>
-        
-        `
-        await this.createContent('about', html)
-
-        
-        const cvData: CVData = {
-            workExperiences: [
-                {
-                    what: 'Software Developer Work Study',
-                    start: new Date('Oct 2023 1'),
-                    end: new Date('Mar 2024 31'),
-                    where: 'Fan12 GmbH & Co. KG',
-                    experience: ` • Mitarbeit an der Entwicklung neuer Features im Frontend- und Backend-Bereich\n • Sammeln (Scraping) und Aufbereiten von Daten von über 60 verschiedenen Webseiten. Sowie die Bereitstellung der Daten, in Form von Google Sheets Tabellen, durch die Google Cloud API.`
-                },
-                {
-                    what: 'Software Developer Internship',
-                    start: new Date('Aug 2023 1'),
-                    end: new Date('Sep 2023 30'),
-                    where: 'Fan12 GmbH & Co. KG',
-                    experience: ` • Mitarbeit an der Entwicklung neuer Features im Frontend- und Backend-Bereich\n • Erstellung eines Programms, welches nach Empfang von neuen Emails, über das Netzwerk auf dem Zieldrucker das angehängte Dokument ausdruckt. Dabei wird in der Email der Zieldrucker spezifiziert.`
+        return new Promise(resolve => {
+            this.db.run(
+                `INSERT INTO keyvaluestore(key, value) VALUES (?, ?)`, [ key, value ], function (err: any) {
+                    if (err) {
+                        resolve(false);
+                        return;
+                    }
+                    // get the last insert id
+                    console.log(`A row has been inserted with rowid ${this.lastID}`);
+                    resolve(true);
                 }
-
-            ],
-            education: [
-                {
-                    what: 'Bachelor of Science in Computer Science',
-                    start: new Date('Oct 2022 1'),
-                    where: 'University Oldenburg',
-                    experience: ` • Analysis für Informatiker 1.0\n • Softwareprojekt 1.0`
-                }
-            ]
-        }
-        await this.createContent('cv', JSON.stringify(cvData))
-        
+            );
+        });
     }
 
 }

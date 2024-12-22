@@ -1,9 +1,9 @@
 <script lang="ts">
-    import type { Post } from "$lib/server/singleton";
-    import CrossIcon from "./icons/CrossIcon.svelte";
-    import ArrowDown from "./icons/ArrowDown.svelte";
-    import ArrowUp from "./icons/ArrowUp.svelte";
-    import SearchPostsInput from "./SearchPostsInput.svelte";
+    import type { Post } from "$lib/server/types";
+    import CrossIcon from "../../icons/CrossIcon.svelte";
+    import ArrowDown from "../../icons/ArrowDown.svelte";
+    import ArrowUp from "../../icons/ArrowUp.svelte";
+    import SearchPostsInput from "../../SearchPostsInput.svelte";
 
     let shownPosts: Post[] = []
     let selectedPost: Post

@@ -31,22 +31,6 @@
         });
     });
 
-    /*
-    onMount(() => {
-
-        hoverItem.addEventListener('mouseenter', () => {
-            isVideoShown = true
-        })
-
-        hoverItem.addEventListener('mousemove', (e: any) => {
-            video.style.left = e.clientX + 10 + 'px';
-            video.style.top = e.clientY + 10 + 'px';
-        })
-
-        hoverItem.addEventListener('mouseleave', () => {
-            isVideoShown = false;
-        })
-    })*/
 </script>
 
 <a href={href} target="_blank">

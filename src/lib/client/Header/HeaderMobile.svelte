@@ -1,5 +1,4 @@
 <script lang="ts">
-    import HeaderMobile from "./HeaderMobile.svelte";
     import Hamburger from "$lib/client/icons/Hamburger.svelte";
     import HeaderBlogItem from "./HeaderBlogItem.svelte";
     import Portal from "svelte-portal";
@@ -44,7 +43,7 @@
         
                     
                     {#if isUserLoggedIn}
-                        
+                        <div></div>
                     {:else}
                         <a href={`/login`} on:click={hideMobileNavDrowdown}>Login</a>
                     {/if}

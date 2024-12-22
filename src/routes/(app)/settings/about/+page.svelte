@@ -1,25 +1,25 @@
 <script lang="ts">
     import { request } from "$lib/client/auth";
-    import Button from "$lib/client/Button.svelte";
+    import AboutEditor from "$lib/client/Editors/AboutEditor.svelte";
     import { onMount } from "svelte";
+    import { KEYS } from "../../../../lib/client/KEYS";
+    import Button from "$lib/client/Button.svelte";
 
-    export let about;
-
-    let textarea: any
+    export let data;
     let message: undefined | string = undefined
     let isSuccessfull = false;
+    let textarea: any
 
     async function handleSubmit() {
         textarea.value
 
-        const res = await request('/api/content', {
+        const res = await request(`/api/keyvaluestore/${KEYS.about}`, {
             method: 'PUT',
             headers: {
                 'Accept': 'application/json',
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({
-                key: 'about',
                 value: textarea.value
             }),
         })
@@ -33,18 +33,15 @@
     }
 
     onMount(() => {
-        textarea.value = about;
+        textarea.value = data.about ?? '';
     })
-
 </script>
 
-<div>
-    <h2>
-        About
-    </h2>
-    <textarea class="border-black border-[1px] rounded-xl min-h-[600px] w-full p-2" bind:this={textarea} />
+<main class="py-8 px-8 xl:px-[10%]">
+    <p>About</p>
+    <AboutEditor bind:value={textarea}/>
     {#if message !== undefined}
         <p style:color={isSuccessfull ? 'green' : 'red'}>{message}</p>
     {/if}
     <Button handleClick={() => handleSubmit()}>Save</Button>
-</div>
+</main>

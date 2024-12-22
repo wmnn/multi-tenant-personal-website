@@ -14,7 +14,7 @@
 <div class="px-8 xl:px-[10%]">
 	<About about={data.about} />
 	<hr class="my-8">
-	<Cv />
+	<Cv workexperience={data.workexperience} education={data.education} />
 	<hr class="my-8">
 	<Projects />
 </div>

@@ -1,6 +1,6 @@
 import { Sqlite3Db } from '$lib/server/db/sqlite3'
 import { AuthManagement } from './auth/authManagement'
-import { CVManager, type CVManagerType } from './CVManager';
+import { CVManager, type CVManagerType } from './db/CVManager';
 import type { AuthManager, DB, KeyValueStore, UserStore } from './types';
 
 let db: DB | AuthManager | UserStore | KeyValueStore

@@ -4,7 +4,7 @@
     import Markdown from "$lib/client/Markdown.svelte";
     import type { Post } from "$lib/server/types";
     import PostConfiguratorHelpItems from "./PostConfiguratorHelpItems.svelte";
-    import { createAndUpdatePostReq } from "./requests";
+    import { createAndUpdatePostReq } from "$lib/client/requests";
     import SubPostsSelector from "./SubPostsSelector.svelte";
 
     export let post: Post;
