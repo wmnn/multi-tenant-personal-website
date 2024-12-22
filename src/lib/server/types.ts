@@ -1,10 +1,10 @@
 import type { RequestEvent } from "@sveltejs/kit"
 
-export interface CVData {
+export interface CVDataEntry {
 
     what: string,
     start: Date,
-    end: Date,
+    end?: Date,
     where: string,
     experience: string
     
@@ -22,8 +22,6 @@ export interface DB {
     deletePost(postId: number): Promise<boolean>
     getCategories(): Promise<Post[]>
     updateCategory(postId: number, json: any): Promise<any>
-    getContent(key: string): Promise<string>
-    updateContent(key: string, value: string): Promise<boolean>
 
 }
 
@@ -45,6 +43,11 @@ export interface AuthManager {
     isAccessTokenValid(e: RequestEvent): Promise<boolean>
     getUserId(e: RequestEvent): Promise<number>
 
+}
+
+export interface KeyValueStore {
+    get(key: string): Promise<string>
+    set(key: string, value: string): Promise<boolean>
 }
 
 export interface UserStore {

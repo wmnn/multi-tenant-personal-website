@@ -1,11 +1,12 @@
 <script>
+    import Button from "$lib/client/Button.svelte";
     import CvInput from "./CVInput.svelte";
 
     let isChecked = false;
 
 </script>
 
-<form class="flex flex-col gap-2">
+<form class="flex flex-col gap-2 bg-white p-8 rounded-xl">
     <label for="what">
         What: (Position, Education)
     </label>
@@ -34,8 +35,12 @@
     {/if}
     
     <label for="experience">
-        Experience: (Company, University)
+        Experience:
     </label>
     <textarea id="experience"/>
+
+    <Button>
+        Save
+    </Button>
     
 </form>

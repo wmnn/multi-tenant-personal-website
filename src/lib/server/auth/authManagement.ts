@@ -1,4 +1,4 @@
-import type { AuthManager, User, UserStore } from "./singleton";
+import type { AuthManager, User, UserStore } from "../types";
 
 import { error, json, redirect, type RequestEvent } from "@sveltejs/kit";
 import jwt from 'jsonwebtoken';
@@ -59,7 +59,7 @@ export class AuthManagement implements AuthManager {
         this.setRefreshToken(event, user.id);
 
         // Redirecting to admin panel
-        redirect(303, '/admin');
+        redirect(303, '/');
     }
 
     async isAccessTokenValid(e: RequestEvent): Promise<boolean> {

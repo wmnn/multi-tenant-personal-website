@@ -1,10 +1,11 @@
-import type { DB, User, UserStore, Post, CategoryEntry } from "./types";
+import type { DB, User, UserStore, Post, CategoryEntry, KeyValueStore } from "../types";
 
 import sqlite3 from 'sqlite3';
 import crypto from 'crypto'
 import { ADMIN_EMAIL, ADMIN_PASSWORD } from '$env/static/private'
+import type { CVData } from "../CVManager";
 
-export class Sqlite3Db implements DB, UserStore {
+export class Sqlite3Db implements DB, UserStore, KeyValueStore {
 
     private db;
 
@@ -255,7 +256,7 @@ export class Sqlite3Db implements DB, UserStore {
 
     }
 
-    async getContent(key: string): Promise<string> {
+    async get(key: string): Promise<string> {
         return new Promise(resolve => this.db.get('SELECT value FROM content WHERE key = ?', [key], (err, row: any) => {
             if (err || row == undefined) {
                 return resolve('');
@@ -280,7 +281,7 @@ export class Sqlite3Db implements DB, UserStore {
             );
         })
     }
-    async updateContent(key: string, value: string): Promise<boolean> {
+    async set(key: string, value: string): Promise<boolean> {
         return new Promise(resolve => { 
             this.db.run(
                 `UPDATE content SET value = ? WHERE key = ?`, 
@@ -334,6 +335,37 @@ export class Sqlite3Db implements DB, UserStore {
         
         `
         await this.createContent('about', html)
+
+        
+        const cvData: CVData = {
+            workExperiences: [
+                {
+                    what: 'Software Developer Work Study',
+                    start: new Date('Oct 2023 1'),
+                    end: new Date('Mar 2024 31'),
+                    where: 'Fan12 GmbH & Co. KG',
+                    experience: ` • Mitarbeit an der Entwicklung neuer Features im Frontend- und Backend-Bereich\n • Sammeln (Scraping) und Aufbereiten von Daten von über 60 verschiedenen Webseiten. Sowie die Bereitstellung der Daten, in Form von Google Sheets Tabellen, durch die Google Cloud API.`
+                },
+                {
+                    what: 'Software Developer Internship',
+                    start: new Date('Aug 2023 1'),
+                    end: new Date('Sep 2023 30'),
+                    where: 'Fan12 GmbH & Co. KG',
+                    experience: ` • Mitarbeit an der Entwicklung neuer Features im Frontend- und Backend-Bereich\n • Erstellung eines Programms, welches nach Empfang von neuen Emails, über das Netzwerk auf dem Zieldrucker das angehängte Dokument ausdruckt. Dabei wird in der Email der Zieldrucker spezifiziert.`
+                }
+
+            ],
+            education: [
+                {
+                    what: 'Bachelor of Science in Computer Science',
+                    start: new Date('Oct 2022 1'),
+                    where: 'University Oldenburg',
+                    experience: ` • Analysis für Informatiker 1.0\n • Softwareprojekt 1.0`
+                }
+            ]
+        }
+        await this.createContent('cv', JSON.stringify(cvData))
+        
     }
 
 }

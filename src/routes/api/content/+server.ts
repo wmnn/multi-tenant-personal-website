@@ -1,4 +1,4 @@
-import { getDB } from "$lib/server/singleton.js";
+import { getDB, getKeyValueStore } from "$lib/server/singleton.js";
 import { json, type RequestEvent } from "@sveltejs/kit";
 
 /** @type {import('./$types').RequestHandler} */
@@ -16,7 +16,7 @@ export async function GET(event) {
 export async function PUT(event) {
 
     const body = await event.request.json()
-    await getDB().updateContent(body.key, body.value)
+    await getKeyValueStore().set(body.key, body.value)
 
     return json({
         status: 200

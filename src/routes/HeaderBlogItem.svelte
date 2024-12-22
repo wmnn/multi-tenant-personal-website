@@ -1,5 +1,5 @@
 <script lang="ts">
-    import type { Post } from "$lib/server/singleton";
+    import type { Post } from "$lib/server/types";
     import ChevronRight from "$lib/client/icons/ChevronRight.svelte";
     import HeaderBlogItem from './HeaderBlogItem.svelte';
 
