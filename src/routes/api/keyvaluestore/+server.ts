@@ -1,16 +1,45 @@
-import { ADMIN_EMAIL, ADMIN_PASSWORD } from '$env/static/private'
-import { getKeyValueStore, getUserStore } from '$lib/server/singleton.js';
-import { KEYS } from '$lib/client/KEYS.js';
-import type { CVData } from '$lib/server/db/CVManager';
+import { ADMIN_EMAIL, ADMIN_PASSWORD } from "$env/static/private";
+import { KEYS } from "$lib/client/KEYS.js";
+import type { CVData } from "$lib/server/db/CVManager.js";
+import { getKeyValueStore, getUserStore } from "$lib/server/singleton.js";
+import { json, type RequestEvent } from "@sveltejs/kit";
 
-/** @type {import('./$types').Actions} */
-export const actions = {
-	defaultValues: async (event) => {
-    
-        const formData = await event.request.formData();
-        // const email: string = formData.get('email') as string ?? '';
-        // const password: string = formData.get('password') as string ?? '';
+/** @type {import('./$types').RequestHandler} */
+/**
+ * Batch update key value store, or set default values
+ * @param event 
+ * @returns 
+ */
+export async function PUT(event) {
 
+    const body = await event.request.json()
+
+    console.log(body)
+
+    const action = body.action
+    if (action == 'batch') {
+
+        // Handling user
+        if (Object.keys(KEYS).includes('email') && Object.keys(KEYS).includes('password')) {
+            await getUserStore().createUser(body.data.email, body.data.password);
+        }
+
+        for (const [key, value] of Object.entries(body.data)) {
+            if (!Object.keys(KEYS).includes(key)) {
+                continue;
+            }
+            
+            if (typeof value === 'object' && value !== null) {
+                await getKeyValueStore().set(key, JSON.stringify(value));    
+            } else {
+                await getKeyValueStore().set(key, value as string);
+            }
+            
+        }
+
+    } else if (action == 'default') {
+        
+        console.log('Inserting default values')
         const email = ADMIN_EMAIL
         const password = ADMIN_PASSWORD
 
@@ -18,31 +47,16 @@ export const actions = {
         const isUserCreated = await getUserStore().createUser(email, password);
         await getKeyValueStore().set(KEYS.about, DEFAULT_ABOUT_SECTION);
         await getKeyValueStore().set(KEYS.workexperience, JSON.stringify(DEFAULT_CV_DATA.workExperiences));    
-        await getKeyValueStore().set(KEYS.education, JSON.stringify(DEFAULT_CV_DATA.education));   
-        
-        return { status: 200 };
-
-	},
-	customValues: async (event) => {
-
-        const formData = await event.request.formData();
-		const title: string = formData.get('title') as string ?? '';
-		const email: string = formData.get('email') as string ?? '';
-        const password: string = formData.get('password') as string ?? '';
-        const about: string = formData.get('about') as string ?? '';
-        const workExperiences: string = formData.get('workexperiences') as string ?? '';
-        const education: string = formData.get('education') as string ?? '';
-        
-        await getKeyValueStore().set(KEYS.title, title);
-        const isUserCreated = await getUserStore().createUser(email, password);
-        await getKeyValueStore().set(KEYS.about, about);
-        await getKeyValueStore().set(KEYS.workexperience, workExperiences);  
-        
-        return { status: 200 };
+        await getKeyValueStore().set(KEYS.education, JSON.stringify(DEFAULT_CV_DATA.education));           
 
     }
+
+    return json({
+        status: 200
+    })
     
-};
+}
+
 
 const DEFAULT_ABOUT_SECTION = `
     <h1 class="inline-block text-4xl">Hallo !</h1>

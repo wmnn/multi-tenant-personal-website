@@ -270,14 +270,14 @@ export class Sqlite3Db implements DB, UserStore, KeyValueStore {
                         return resolve(false);   
                     }
                     
-                    console.log(this.changes)
+                    // console.log(this.changes)
                     // this.changes == 1 => one row is affected
                     if (this.changes == 1) return resolve(true);
                     resolve(false);
                 }
             );
         })
-        console.log(success)
+    
         if (success) return new Promise(resolve => resolve (true));
 
         return new Promise(resolve => {

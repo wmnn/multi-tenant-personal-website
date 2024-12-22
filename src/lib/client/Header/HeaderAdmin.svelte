@@ -20,7 +20,7 @@
             Posts
         </HeaderSubTitleHref>
         <HeaderSubTitleHref href={`/settings/categories`}>
-            Categories
+            Blog Categories
         </HeaderSubTitleHref>
         <HeaderSubTitleHref href={`/api/logout`}>
             Log out

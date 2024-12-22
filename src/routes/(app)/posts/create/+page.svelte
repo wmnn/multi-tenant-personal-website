@@ -1,5 +1,5 @@
 <script>
-    import PostConfiguratorJSON from "$lib/client/PostConfiguratorJSON.svelte";
+    import PostConfiguratorJSON from "$lib/client/Editors/PostConfigurator/PostConfiguratorJSON.svelte";
 </script>
 
 <PostConfiguratorJSON post={{

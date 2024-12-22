@@ -71,7 +71,7 @@
     </label>
     <textarea id="experience" class={`${borderStyles} p-2 min-h-36`} bind:this={experience} />
 
-    <Button>
+    <Button type={'submit'}>
         Save
     </Button>
     
