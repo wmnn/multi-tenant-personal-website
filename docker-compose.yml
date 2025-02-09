@@ -1,0 +1,84 @@
+services:
+    nginx:
+        image: nginx:latest
+        container_name: nginx
+        volumes:
+        - ./nginx.conf:/etc/nginx/nginx.conf:ro
+        - ./cert/certificate.crt:/etc/ssl/certs/certificate.crt
+        - ./cert/private.key:/etc/ssl/private/private.key
+        ports:
+        - 80:80
+        - 443:443
+        # restart: always
+
+    tenants:
+        image: node:20-bullseye
+        container_name: tenants
+        command: sh -c "npm i && npm run dev -- --host"
+        ports:
+        - 3001:5173
+        working_dir: /app
+        volumes:
+        - ./tenants:/app
+        environment:
+            MYSQL_HOST: ${MYSQL_HOST}
+            MYSQL_USER: ${MYSQL_USER}
+            MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+            MYSQL_DB: ${MYSQL_DB}
+            ADMIN_EMAIL: ${ADMIN_EMAIL}
+            ADMIN_PASSWORD: ${ADMIN_PASSWORD}
+            JWT_SECRET: ${JWT_SECRET}
+
+    main:
+        image: node:20-bullseye
+        container_name: main
+        command: sh -c "npm i && npm run dev -- --host"
+        ports:
+        - 3000:5173
+        working_dir: /app
+        volumes:
+        - ./main:/app
+        environment:
+            MYSQL_HOST: ${MYSQL_HOST}
+            MYSQL_USER: ${MYSQL_USER}
+            MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+            MYSQL_DB: ${MYSQL_DB}
+            ADMIN_EMAIL: ${ADMIN_EMAIL}
+            ADMIN_PASSWORD: ${ADMIN_PASSWORD}
+            JWT_SECRET: ${JWT_SECRET}
+    
+    test_db:
+        # We use a mariadb image which supports both amd64 & arm64 architecture
+        image: mariadb:10.6.4-focal
+        container_name: test_db
+        # If you really want to use MySQL, uncomment the following line
+        #image: mysql:8.0.27
+        command: '--default-authentication-plugin=mysql_native_password'
+        ports:
+        - 9999:3306
+        volumes:
+        - db_data:/var/lib/mysql
+        restart: always
+        security_opt:
+        - seccomp:unconfined
+        environment:
+        - MYSQL_DATABASE=db
+        - MYSQL_ROOT_PASSWORD=somewordpress
+        - MYSQL_USER=wordpress
+        - MYSQL_PASSWORD=wordpress
+
+    test_phpmyadmin:
+        image: phpmyadmin/phpmyadmin
+        container_name: phpmyadmin
+        ports:
+            - 8890:80
+        environment:
+            PMA_HOST: test_db
+            MYSQL_USERNAME: wordpress
+            MYSQL_ROOT_PASSWORD: somewordpress
+            PMA_USER: wordpress
+            PMA_PASSWORD: wordpress
+            UPLOAD_LIMIT: 20000000000
+            MAX_EXECUTION_TIME: 1500
+volumes:
+    db_data: # creates a db_data volume in the docker directoy
