@@ -22,7 +22,8 @@ export async function createAndUpdatePostReq(postId: number, title: string, cont
         method: isEditingExistingPost ? 'PUT' : 'POST',
         headers: {
             'Accept': 'application/json',
-            'Content-Type': 'application/json'
+            'Content-Type': 'application/json',
+            'mode': 'cors'
         },
         body: JSON.stringify(postRequestData),
     })

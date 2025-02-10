@@ -1,22 +1,22 @@
 import { getAuthManager } from "$lib/server/singleton"
 import { json, type Handle, type RequestEvent } from "@sveltejs/kit"
-
+import jwt from 'jsonwebtoken';
+import { JWT_SECRET } from '$env/static/private'
 
 /** @type {import('@sveltejs/kit').Handle} */
 export const handle: Handle = async ({event, resolve}) => {
 	
-	console.log('Request');
-	// // Saving the user id inside locals in order to access it easily
-	// const userId = await getAuthManager().getUserId(event);
-	// if (userId !== -1) {
-	// 	event.locals.userId = userId;
-	// }
+	const pageName = event.cookies.get('pageName');
+	if (pageName) {
+		jwt.verify(pageName, JWT_SECRET, function(err, decoded: any) {
+			if (!err) {
+				event.locals.pageName = decoded.pageName;	
+			}
+		})
+	}
 
 	if (isProtectedRoute(event)) {
-		// console.log('Before checking access token')
 		if (!await getAuthManager().isAccessTokenValid(event)) {
-
-			// console.log('Returning json response with status code 401')
 			return json({
 				status: 401
 			})

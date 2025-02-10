@@ -57,6 +57,7 @@ export class AuthManagement implements AuthManager {
         // Setting cookies
         this.setAccessToken(event, user.id);
         this.setRefreshToken(event, user.id);
+        event.cookies.set('pageName', jwt.sign({ pageName: user.pageName }, JWT_SECRET, {expiresIn: '7d'}), {path: '/'});
 
         // Redirecting to admin panel
         redirect(303, '/');
@@ -88,7 +89,7 @@ export class AuthManagement implements AuthManager {
         // Deleting the cookies set in the authentication process
         e.cookies.delete(ACCESS_TOKEN_COOKIE_NAME, { path: '/' })
         e.cookies.delete(REFRESH_TOKEN_COOKIE_NAME, { path: REFRESH_PATH,  httpOnly: true })
-
+        e.cookies.delete('pageName', { path: '/' })
     }
 
     handleLogout(e: RequestEvent) {

@@ -61,7 +61,8 @@ export interface User {
 
     id : string,
     email : string,
-    password? : string
+    password? : string,
+    pageName: string
 
 }
 
