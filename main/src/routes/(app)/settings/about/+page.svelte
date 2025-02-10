@@ -2,7 +2,7 @@
     import { request } from "$lib/client/auth";
     import AboutEditor from "$lib/client/Editors/AboutEditor.svelte";
     import { onMount } from "svelte";
-    import { KEYS } from "../../../../lib/client/KEYS";
+    import { KEYS } from "../../../../lib/client/KEYVALUESTORE_KEYS";
     import Button from "$lib/client/Button.svelte";
 
     export let data;
