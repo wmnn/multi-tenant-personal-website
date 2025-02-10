@@ -26,8 +26,6 @@ services:
             MYSQL_USER: ${MYSQL_USER}
             MYSQL_PASSWORD: ${MYSQL_PASSWORD}
             MYSQL_DB: ${MYSQL_DB}
-            ADMIN_EMAIL: ${ADMIN_EMAIL}
-            ADMIN_PASSWORD: ${ADMIN_PASSWORD}
             JWT_SECRET: ${JWT_SECRET}
 
     main:
@@ -45,8 +43,6 @@ services:
             MYSQL_USER: ${MYSQL_USER}
             MYSQL_PASSWORD: ${MYSQL_PASSWORD}
             MYSQL_DB: ${MYSQL_DB}
-            ADMIN_EMAIL: ${ADMIN_EMAIL}
-            ADMIN_PASSWORD: ${ADMIN_PASSWORD}
             JWT_SECRET: ${JWT_SECRET}
             # https://stackoverflow.com/questions/75980876/cross-site-post-form-submissions-are-forbidden-error-from-sveltekit-in-dev-mod
             ORIGIN: https://nginx:443 # should be used in production -> cors
@@ -66,10 +62,10 @@ services:
         security_opt:
         - seccomp:unconfined
         environment:
-        - MYSQL_DATABASE=db
-        - MYSQL_ROOT_PASSWORD=somewordpress
-        - MYSQL_USER=wordpress
-        - MYSQL_PASSWORD=wordpress
+        - MYSQL_DATABASE=${MYSQL_DB}
+        - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+        - MYSQL_USER=${MYSQL_USER}
+        - MYSQL_PASSWORD=${MYSQL_PASSWORD}
 
     test_phpmyadmin:
         image: phpmyadmin/phpmyadmin
@@ -78,10 +74,9 @@ services:
             - 8890:80
         environment:
             PMA_HOST: test_db
-            MYSQL_USERNAME: wordpress
-            MYSQL_ROOT_PASSWORD: somewordpress
-            PMA_USER: wordpress
-            PMA_PASSWORD: wordpress
+            MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+            PMA_USER: ${MYSQL_USER}
+            PMA_PASSWORD: ${MYSQL_PASSWORD}
             UPLOAD_LIMIT: 20000000000
             MAX_EXECUTION_TIME: 1500
 volumes:

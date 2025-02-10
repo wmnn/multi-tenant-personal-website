@@ -13,6 +13,9 @@
         <HeaderSubTitleHref href={`/settings/cv`}>
             Lebenslauf
         </HeaderSubTitleHref>
+        <HeaderSubTitleHref href={`/settings`}>
+            Settings
+        </HeaderSubTitleHref>
         <HeaderSubTitleHref href={`/api/logout`}>
             Log out
         </HeaderSubTitleHref>

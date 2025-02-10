@@ -1,10 +1,12 @@
-import { getAuthManager } from "$lib/server/singleton"
+import { getAuthManager, getDB } from "$lib/server/singleton"
 import { json, type Handle, type RequestEvent } from "@sveltejs/kit"
 import jwt from 'jsonwebtoken';
 import { JWT_SECRET } from '$env/static/private'
 
 /** @type {import('@sveltejs/kit').Handle} */
 export const handle: Handle = async ({event, resolve}) => {
+	
+	getDB();
 	
 	const pageName = event.cookies.get('pageName');
 	if (pageName) {

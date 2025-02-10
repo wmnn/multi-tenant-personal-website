@@ -21,7 +21,7 @@ export async function PUT(event) {
     if (action == 'batch') {
 
         // Handling user
-        if (Object.keys(KEYS).includes('email') && Object.keys(KEYS).includes('password')) {
+        if (Object.keys(body.data).includes('email') && Object.keys(body.data).includes('password')) {
             isSuccess = await getUserStore().createUser(body.data.email, pageName, body.data.password);
         }
 
