@@ -40,28 +40,28 @@
     </div>
 
     <label for="what">
-        What: (Position, Education)
+        What ?
     </label>
     <input placeholder={''} class={inputStyles} id={'what'} type={'text'} bind:this={what}/>
 
     <label for="where">
-        Where: (Company, University)
+        Where ? 
     </label>
     <input placeholder={''} class={inputStyles} id={'where'} type={'text'} bind:this={where}/>
 
     <label for="start-date">
-        Start date: (Company, University)
+        When did you start ?
     </label>
     <input placeholder={''} class={inputStyles} id={'start-date'} type={'date'} bind:this={start}/>   
 
     <div class="flex gap-2">
-        Currently at the Company / Facility ?
+        Are you still there ?
         <input type="checkbox" bind:checked={isChecked} />
     </div>
     
     {#if !isChecked}
         <label for="end-date">
-            End date: (Company, University)
+            When did you finish it ?
         </label>
         <input placeholder={''} class={inputStyles} id={'end-date'} type={'date'} bind:this={end}/>   
     {/if}
