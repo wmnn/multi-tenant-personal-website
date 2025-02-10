@@ -7,7 +7,7 @@ export interface CVData {
 }
 
 export interface CVManagerType {
-    getCVData: () => Promise<CVData>
+    getCVData: (pageName: string) => Promise<CVData>
 }
 
 export class CVManager implements CVManagerType {
@@ -18,11 +18,11 @@ export class CVManager implements CVManagerType {
         this.keyValueStore = keyValueStore;
     }
 
-    async getCVData(): Promise<CVData> {
+    async getCVData(pageName: string): Promise<CVData> {
         try {
             return {
-                workExperiences: JSON.parse(await this.keyValueStore.get(KEYS.workexperience) ?? ''),
-                education: JSON.parse(await this.keyValueStore.get(KEYS.education) ?? '')
+                workExperiences: JSON.parse(await this.keyValueStore.get(pageName, KEYS.workexperience) ?? ''),
+                education: JSON.parse(await this.keyValueStore.get(pageName, KEYS.education) ?? '')
             }
         } catch (_) {
             return {

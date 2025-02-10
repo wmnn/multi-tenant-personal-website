@@ -9,7 +9,7 @@ import { createHash } from "../HashManager";
 
 export class MariaDB implements DB, UserStore, KeyValueStore {
 
-    private con: mysql.Connection | null = null;
+    private con: any;
 
     constructor() {
 
@@ -33,7 +33,8 @@ export class MariaDB implements DB, UserStore, KeyValueStore {
             if (!this.con) {
                 return resolve(undefined);
             }
-            const [rows] : any = await this.con.query('SELECT * FROM users WHERE email = ? AND password = ?', [email, createHash(password)]);
+    
+            const [rows] = await this.con.query('SELECT * FROM users WHERE email = ? AND password = ?', [email, createHash(password)]);
             
             if (rows.length == 0) {
                 return resolve(undefined);
@@ -49,16 +50,9 @@ export class MariaDB implements DB, UserStore, KeyValueStore {
 
     async createUser(email: string, pageName: string, password: string): Promise<boolean> {
         
-        try {
+        const [res] = await this.con.query('INSERT IGNORE INTO users(email, pageName, password) VALUES (?,?,?)', [email, pageName, createHash(password)]);
+        return new Promise(resolve => res.affectedRows == 1 ? resolve(true) : resolve(false));
 
-            if (!this.con) {
-                return new Promise(resolve => resolve(false));
-            }
-            const [res] : any  = await this.con.query('INSERT IGNORE INTO users(email, pageName, password) VALUES (?,?,?)', [email, pageName, createHash(password)]);
-            return new Promise(resolve => res.affectedRows == 1 ? resolve(true) : resolve(false));
-        } catch (e) {
-            return new Promise(resolve => resolve(false));
-        }
     }
 
     async get(pageName: string, key: string): Promise<string | undefined> {
@@ -67,25 +61,25 @@ export class MariaDB implements DB, UserStore, KeyValueStore {
             if (!this.con) {
                 return resolve(undefined);
             }
-            const [rows] : any = await this.con.query('SELECT * FROM keyvaluestore WHERE `pageName` = ? AND \`key\` = ?', [pageName, key]);
+
+            const [rows] = await this.con.query('SELECT * FROM keyvaluestore WHERE pageName = ? AND \`key\` = ?', [pageName, key]);
 
             if (rows.length == 0) {
                 resolve(undefined);
                 return;
             }
-
-            resolve(rows[0].value);
+            try {   
+                resolve(rows[0].value)
+            } catch(e) {
+                resolve(undefined)
+            }
         })    
 
     }
  
     async set(pageName: string, key: string, value: string): Promise<boolean> {
         return new Promise(async (resolve) => {
-            if (!this.con) {
-                return resolve(false);
-            }
-
-            const [res] : any  = await this.con.query(`INSERT INTO keyvaluestore (\`pageName\`, \`key\`, \`value\`)
+            const [res] = await this.con.query(`INSERT INTO keyvaluestore (\`pageName\`, \`key\`, \`value\`)
                 VALUES (?, ?, ?) 
                 ON DUPLICATE KEY UPDATE value=?`
             , [pageName, key, value, value])

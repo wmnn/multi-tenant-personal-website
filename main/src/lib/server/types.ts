@@ -15,13 +15,13 @@ export interface CVDataEntry {
  */
 export interface DB {
 
-    createPost(post: Post): Promise<number>
-    getPost(postId: number): Promise<Post | undefined>
-    getPosts(query: string) : Promise<Post[]>
-    updatePost(post: Post): Promise<number>
-    deletePost(postId: number): Promise<boolean>
-    getCategories(): Promise<Post[]>
-    updateCategory(postId: number, json: any): Promise<any>
+    // createPost(post: Post): Promise<number>
+    // getPost(postId: number): Promise<Post | undefined>
+    // getPosts(query: string) : Promise<Post[]>
+    // updatePost(post: Post): Promise<number>
+    // deletePost(postId: number): Promise<boolean>
+    // getCategories(): Promise<Post[]>
+    // updateCategory(postId: number, json: any): Promise<any>
 
 }
 
@@ -46,14 +46,14 @@ export interface AuthManager {
 }
 
 export interface KeyValueStore {
-    get(key: string): Promise<string | undefined>
-    set(key: string, value: string): Promise<boolean>
+    get(pageName: string, key: string): Promise<string | undefined>
+    set(pageName: string, key: string, value: string): Promise<boolean>
 }
 
 export interface UserStore {
 
     findUser(email: string, password: string): Promise<undefined | User>
-    createUser(email: string, password: string): Promise<boolean>
+    createUser(email: string, pageName: string, password: string): Promise<boolean>
 
 }
 

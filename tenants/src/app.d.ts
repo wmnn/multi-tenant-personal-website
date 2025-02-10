@@ -5,7 +5,7 @@ declare global {
 		// interface Error {}
 		interface Locals {
 			userId? : number
-			isSubdomain? : boolean
+			pageName : string
 		}
 		// interface PageData {}
 		// interface PageState {}

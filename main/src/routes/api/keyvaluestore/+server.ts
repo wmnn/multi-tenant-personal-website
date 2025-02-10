@@ -1,8 +1,8 @@
-import { ADMIN_EMAIL, ADMIN_PASSWORD } from "$env/static/private";
 import { KEYS } from "$lib/client/KEYS.js";
 import type { CVData } from "$lib/server/db/CVManager.js";
 import { getKeyValueStore, getUserStore } from "$lib/server/singleton.js";
 import { json, type RequestEvent } from "@sveltejs/kit";
+import { v1 as uuidv1 } from 'uuid';
 
 /** @type {import('./$types').RequestHandler} */
 /**
@@ -14,14 +14,15 @@ export async function PUT(event) {
 
     const body = await event.request.json()
 
-    console.log(body)
-
     const action = body.action
+    const pageName = uuidv1();
+    let isSuccess = true;
+
     if (action == 'batch') {
 
         // Handling user
         if (Object.keys(KEYS).includes('email') && Object.keys(KEYS).includes('password')) {
-            await getUserStore().createUser(body.data.email, body.data.password);
+            isSuccess = await getUserStore().createUser(body.data.email, pageName, body.data.password);
         }
 
         for (const [key, value] of Object.entries(body.data)) {
@@ -30,31 +31,49 @@ export async function PUT(event) {
             }
             
             if (typeof value === 'object' && value !== null) {
-                await getKeyValueStore().set(key, JSON.stringify(value));    
+                await getKeyValueStore().set(pageName, key, JSON.stringify(value));    
             } else {
-                await getKeyValueStore().set(key, value as string);
+                await getKeyValueStore().set(pageName, key, value as string);
             }
             
         }
 
     } else if (action == 'default') {
         
-        console.log('Inserting default values')
-        const email = ADMIN_EMAIL
-        const password = ADMIN_PASSWORD
-
-        await getKeyValueStore().set(KEYS.title, 'Peter Würdemann');
-        const isUserCreated = await getUserStore().createUser(email, password);
-        await getKeyValueStore().set(KEYS.about, DEFAULT_ABOUT_SECTION);
-        await getKeyValueStore().set(KEYS.workexperience, JSON.stringify(DEFAULT_CV_DATA.workExperiences));    
-        await getKeyValueStore().set(KEYS.education, JSON.stringify(DEFAULT_CV_DATA.education));           
+        const email = 'abc'
+        const password: string = '123456'
+        isSuccess = await getUserStore().createUser(email, pageName, password);
+        await getKeyValueStore().set(pageName, KEYS.about, DEFAULT_ABOUT_SECTION);
+        await getKeyValueStore().set(pageName, KEYS.workexperience, JSON.stringify(DEFAULT_CV_DATA.workExperiences));    
+        await getKeyValueStore().set(pageName, KEYS.education, JSON.stringify(DEFAULT_CV_DATA.education));           
 
     }
 
-    return json({
-        status: 200
-    })
+    if (isSuccess) {
+        const redirectUrl = `https://${pageName}.${getDomain(event)}`;
+        return json({
+            status: 200,
+            href: redirectUrl
+        })
+    } else {
+        return json({
+            status: 400
+        })
+    }    
     
+}
+
+
+function getDomain(event: RequestEvent): string {
+    const host = event.url.host; // e.g., "sub.example.com"
+    const parts = host.split('.'); 
+
+    // If it's an IPv4 or localhost, return as-is
+    if (parts.length <= 2 || /^[0-9.]+$/.test(host) || host === 'localhost') {
+        return host;
+    }
+
+    return parts.slice(-2).join('.'); // Get only "example.com"
 }
 
 

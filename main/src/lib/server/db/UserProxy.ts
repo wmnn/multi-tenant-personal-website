@@ -12,8 +12,8 @@ class UserProxy implements UserStore {
         return this.userStore.findUser(email, password);
     }
 
-    createUser(email: string, password: string): Promise<boolean> {
-        return this.userStore.createUser(email, password)
+    createUser(email: string, pageName: string, password: string): Promise<boolean> {
+        return this.userStore.createUser(email, pageName, password)
     }
     
 }
