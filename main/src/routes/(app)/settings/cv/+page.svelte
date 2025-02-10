@@ -1,7 +1,7 @@
 <script lang="ts">
     import { request } from "$lib/client/auth";
     import CVEditor from "$lib/client/Editors/CVEditor/CVEditor.svelte";
-    import { KEYS } from "$lib/client/KEYS.js";
+    import { KEYS } from "$lib/client/KEYVALUESTORE_KEYS.js";
     import type { CVDataEntry } from "$lib/server/types.js";
     export let data;
 

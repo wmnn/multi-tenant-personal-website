@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { formatDate, formatDates, getDateDifference } from "$lib/client/cv";
+    import { formatDate, formatDates, getDateDifference } from "$lib/client/Editors/CVEditor/cv";
     import DeleteIcon from "$lib/client/icons/DeleteIcon.svelte";
     import type { CVDataEntry } from "$lib/server/types";
 

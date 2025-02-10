@@ -1,8 +1,6 @@
 <script lang="ts">
-    import { request } from "$lib/client/auth";
     import Button from "$lib/client/Button.svelte";
     import type { CVDataEntry } from "$lib/server/types";
-    import CvInput from "./CVInput.svelte";
     import CrossIcon from "$lib/client/icons/CrossIcon.svelte";
     import { borderStyles, inputStyles } from "$lib/client/styles";
 

@@ -1,4 +1,4 @@
-import { KEYS } from "../../client/KEYS";
+import { KEYS } from "../../client/KEYVALUESTORE_KEYS";
 import type { CVDataEntry, DB, KeyValueStore } from "../types";
 
 export interface CVData {

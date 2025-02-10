@@ -4,8 +4,8 @@ The nginx reverse proxy routes the request to the correct server. For subdomains
 
 ### How to execute it ?
 
-1. open the phpmyadmin ui and execute the init.sql file located at the root folder
+1. Create a cert folder `mkdir cert` and add inside the cert folder a certificate named `certificate.crt` and a private key named `private.key`.
 
-2. Create a cert folder `mkdir cert` and add inside the cert folder a certificate named `certificate.crt` and a private key named `private.key`.
+2. Execute `docker compose up`
 
-3. Execute `docker compose up`
+3. open the phpmyadmin ui and execute the init.sql file located at the root folder

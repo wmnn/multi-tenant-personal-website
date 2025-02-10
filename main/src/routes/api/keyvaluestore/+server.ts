@@ -1,4 +1,4 @@
-import { KEYS } from "$lib/client/KEYS.js";
+import { KEYS } from "$lib/client/KEYVALUESTORE_KEYS.js";
 import type { CVData } from "$lib/server/db/CVManager.js";
 import { getKeyValueStore, getUserStore } from "$lib/server/singleton.js";
 import { json, type RequestEvent } from "@sveltejs/kit";
