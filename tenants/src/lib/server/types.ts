@@ -14,7 +14,7 @@ export interface CVDataEntry {
  * Interface for a class with database logic
  */
 export interface DB {
-
+    getProjects(pageName: string): Promise<Array<any> | undefined>
     // createPost(post: Post): Promise<number>
     // getPost(postId: number): Promise<Post | undefined>
     // getPosts(query: string) : Promise<Post[]>

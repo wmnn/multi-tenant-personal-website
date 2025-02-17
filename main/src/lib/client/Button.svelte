@@ -1,6 +1,6 @@
 <script lang="ts">
-    import { Spinner } from "flowbite-svelte";
     import { buttonStyles } from "./styles";
+    import LoadingSpinner from "./LoadingSpinner.svelte";
 
     export let classes = ''
     export let handleClick = (e: any) => {}
@@ -10,9 +10,8 @@
 
 <button type={type} class={`${buttonStyles} ${classes}`} on:click={handleClick}>
     {#if isLoading}
-        <Spinner color="gray" />
+        <LoadingSpinner />
     {:else}
         <slot />
     {/if}
-   
-</button>
+</button>        

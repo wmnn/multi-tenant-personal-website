@@ -13,3 +13,11 @@ CREATE TABLE keyvaluestore (
     value LONGTEXT NOT NULL,
     PRIMARY KEY (pageName, `key`)
 );
+
+CREATE TABLE projects (
+    pageName VARCHAR(256) NOT NULL,
+    title VARCHAR(100) NOT NULL,
+    imageUrl TEXT,
+    href VARCHAR(256) NOT NULL,
+    PRIMARY KEY (pageName, title)
+);

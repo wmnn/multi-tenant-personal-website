@@ -2,6 +2,7 @@
     import { request } from '$lib/client/auth';
     import Button from '$lib/client/Button.svelte';
     import Input from '$lib/client/Input.svelte';
+    import LoadingSpinner from '$lib/client/LoadingSpinner.svelte';
     import ContactEditor from './ContactEditor.svelte';
     import { Spinner } from 'flowbite-svelte';
 

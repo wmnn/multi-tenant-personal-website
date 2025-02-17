@@ -87,6 +87,25 @@ export class MariaDB implements DB, UserStore, KeyValueStore {
         });
     }
 
+    async getProjects(pageName: string): Promise<Array<any>> {
+
+        return new Promise(async (resolve) => {
+            if (!this.con) {
+                return resolve([]);
+            }
+    
+            const [rows] = await this.con.query('SELECT * FROM projects WHERE pageName = ?', [pageName]);
+            
+            if (rows.length == 0) {
+                return resolve([]);
+            }
+
+            resolve(rows as Array<any>);
+           
+        })
+
+    }
+
     // async createPost(post: Post): Promise<number> {
     //     return new Promise(resolve => -1);
     // }

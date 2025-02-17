@@ -1,17 +1,18 @@
 <script>
     import Project from "./Project.svelte";
-
+    export let projects;
 </script>
-<section id="projects" class="h-[100vh] overflow-hidden flex flex-col justify-center">
+
+<section id="projects" class="min-h-screen flex flex-col">
     <h1>Projekte</h1>
 
-    <div class="flex flex-wrap">
-        <Project 
-            title={'LyricsFluencer'}
-            href={'https://github.com/wmnn/LyricsFluencer-SwiftUI'}
-            thumbnail={`/projects/LyricsFluencer.png`}
-        />
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        {#each projects as project}
+            <Project 
+                title={project.title}
+                href={project.href}
+                thumbnail={project.imageUrl}
+            />
+        {/each}
     </div>
-
-
 </section>

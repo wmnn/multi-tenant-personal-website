@@ -14,7 +14,10 @@ export interface CVDataEntry {
  * Interface for a class with database logic
  */
 export interface DB {
-
+    addProject(pageName: string, project: any): Promise<boolean>
+    deleteProject(pageName: string, title: string): Promise<boolean>
+    editProject(pageName: string, title: string, project: any): Promise<boolean>
+    getProjects(pageName: string): Promise<Array<any> | undefined>
     // createPost(post: Post): Promise<number>
     // getPost(postId: number): Promise<Post | undefined>
     // getPosts(query: string) : Promise<Post[]>
@@ -82,4 +85,9 @@ export interface Socials {
     Instagram?: string,
     YouTube?: string,
     GitHub?: string
+}
+export interface Project {
+    title: string,
+    imageUrl: string,
+    href: string
 }

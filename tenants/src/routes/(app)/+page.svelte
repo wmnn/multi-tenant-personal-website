@@ -5,10 +5,6 @@
     import Projects from "./Projects.svelte";
 
 	export let data;
-
-	onMount(() => {
-		console.log(data)
-	})
 </script>
 
 <svelte:head>
@@ -21,7 +17,7 @@
 	<hr class="my-8">
 	<Cv workexperience={data.workexperience} education={data.education} />
 	<hr class="my-8">
-	<Projects />	
+	<Projects projects={data.projects}/>	
 </div>
 
 

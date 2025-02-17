@@ -1,4 +1,4 @@
-import type { DB, User, UserStore, Post, CategoryEntry, KeyValueStore } from "../types";
+import type { DB, User, UserStore, Post, CategoryEntry, KeyValueStore, Project } from "../types";
 // @ts-ignore
 // Doesn't work correctly ? Need to use process.env
 // import { MYSQL_HOST, MYSQL_USER, MYSQL_PASSWORD, MYSQL_DB } from '$env/dynamic/private'
@@ -91,6 +91,85 @@ export class MariaDB implements DB, UserStore, KeyValueStore {
             , [pageName, key, value, value])
             res.affectedRows == 1 ? resolve(true) : resolve(false);
         });
+    }
+
+    async addProject(pageName:string, project: Project): Promise<boolean> {
+        try {
+            if (!this.con) {
+                return new Promise(resolve => resolve(false));
+            }
+            const [res] : any  = await this.con.query('INSERT IGNORE INTO projects(pageName, title, imageUrl, href) VALUES (?,?,?,?)', [pageName, project.title, project.imageUrl, project.href]);
+            console.log(res)
+            return new Promise(resolve => res.affectedRows == 1 ? resolve(true) : resolve(false));
+        } catch (e) {
+            console.log(e)
+            return new Promise(resolve => resolve(false));
+        }
+    }
+    async editProject(pageName: string, title: string, newProject: any): Promise<boolean> {
+        if (!this.con) return false;
+    
+        try {
+            if (title !== newProject.title) {
+                await this.deleteProject(pageName, title);
+                title = newProject.title; 
+            }
+    
+            const [res]: any = await this.con.query(
+                `INSERT INTO projects (\`pageName\`, \`title\`, imageUrl, href)
+                 VALUES (?, ?, ?, ?) 
+                 ON DUPLICATE KEY UPDATE imageUrl = VALUES(imageUrl), href = VALUES(href)`,
+                [pageName, title, newProject.imageUrl, newProject.href]
+            );
+    
+            return res.affectedRows > 0;
+        } catch (error) {
+            console.error('Error editing project:', error);
+            return false;
+        }
+    }
+    
+    async deleteProject(pageName: string, title: any): Promise<boolean> {
+        return new Promise(async (resolve, reject) => {
+            try {
+                if (!this.con) {
+                    return resolve(false);
+                }
+    
+                const [result]: any = await this.con.query(
+                    'DELETE FROM projects WHERE pageName = ? AND title = ?', 
+                    [pageName, title]
+                );
+    
+                // Check if rows were affected
+                if (result.affectedRows > 0) {
+                    resolve(true);
+                } else {
+                    resolve(false);
+                }
+            } catch (error) {
+                reject(error); // Reject the promise on error
+            }
+        });
+    }
+    
+    async getProjects(pageName: string): Promise<Array<any>> {
+
+        return new Promise(async (resolve) => {
+            if (!this.con) {
+                return resolve([]);
+            }
+    
+            const [rows] : any = await this.con.query('SELECT * FROM projects WHERE pageName = ?', [pageName]);
+            
+            if (rows.length == 0) {
+                return resolve([]);
+            }
+
+            resolve(rows as Array<any>);
+           
+        })
+
     }
 
     // async createPost(post: Post): Promise<number> {
