@@ -2,7 +2,6 @@
     import { inputStyles } from './styles'
     export let placeholder = ''
     export let name = ''
-
     export let value: string
 </script>
 

@@ -74,3 +74,12 @@ export interface Post {
     createdAt?: string,
     subPosts?: Post[]
 }
+
+export interface Socials {
+    email?: string,
+    linkedin?: string,
+    facebook?: string,
+    instagram?: string,
+    youtube?: string,
+    github?: string
+}

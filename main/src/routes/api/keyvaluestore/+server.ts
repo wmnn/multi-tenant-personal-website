@@ -1,6 +1,6 @@
 import { KEYS } from "$lib/client/KEYVALUESTORE_KEYS.js";
 import type { CVData } from "$lib/server/db/CVManager.js";
-import { getKeyValueStore, getUserStore } from "$lib/server/singleton.js";
+import { getAuthManager, getKeyValueStore, getUserStore } from "$lib/server/singleton.js";
 import { json, type RequestEvent } from "@sveltejs/kit";
 import { v1 as uuidv1 } from 'uuid';
 
@@ -12,6 +12,11 @@ import { v1 as uuidv1 } from 'uuid';
  */
 export async function PUT(event) {
 
+    if (!await getAuthManager().isAccessTokenValid(event)) {
+        return json({
+            status: 401
+        })
+    }
     const body = await event.request.json()
 
     const action = body.action

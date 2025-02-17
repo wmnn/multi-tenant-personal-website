@@ -27,6 +27,7 @@
 	},
 	"type": "module",
 	"dependencies": {
+		"flowbite-svelte": "^0.47.4",
 		"jsonwebtoken": "^9.0.2",
 		"marked": "^14.1.3",
 		"mysql2": "^3.12.0",
