@@ -19,12 +19,12 @@ export async function POST(e) {
     // Update socials
     const body = await e.request.json();
     const socials: Socials = {
-        github: body.github,
-        facebook: body.facebook,
-        youtube: body.youtube,
-        linkedin: body.linkedin,
-        instagram: body.instagram,
-        email: body.email
+        GitHub: handleLinks(body.GitHub),
+        Facebook: handleLinks(body.Facebook),
+        YouTube: handleLinks(body.Youtube),
+        LinkedIn: handleLinks(body.LinkedIn),
+        Instagram: handleLinks(body.Instagram),
+        Email: body.Email
     }
     if (Object.keys(socials).length > 0) {
         keyValueStore.set(e.locals.pageName!, KEYS.socials, JSON.stringify(socials));
@@ -36,3 +36,16 @@ export async function POST(e) {
     })
     
 };
+
+/**
+ * Handles the correct format
+ */
+function handleLinks(link: string): string | undefined {
+    if (!link) {
+        return undefined
+    }
+    if (link.startsWith('https://www.') || link.startsWith('http://www.') || link.startsWith('http')) {
+        return link;
+    }
+    return `http://${link}`
+}

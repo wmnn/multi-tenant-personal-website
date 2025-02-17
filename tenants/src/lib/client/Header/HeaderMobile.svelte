@@ -4,7 +4,6 @@
     import Portal from "svelte-portal";
     import HeaderTitle from "./HeaderTitle.svelte";
     export let isUserLoggedIn;
-    export let posts;
 
     let isMobileNavDropdownShown = false;
 	function hideMobileNavDrowdown() {
@@ -34,9 +33,7 @@
                 </div>
                 
                 <hr>
-        
-                <HeaderBlogItem {posts} isMainElement={true} isOpenOnHoverAllowed={false}/>
-                
+           
                 <ul class="flex gap-4 flex-col w-full px-8 py-8 text-reallylight">			
                     <h2 class="text-reallylight">Contact</h2>
                     <a href={`https://www.linkedin.com/in/peter-wuerdemann/`} class="text-reallylight pl-4 text-l" target=”_blank”>LinkedIn</a>

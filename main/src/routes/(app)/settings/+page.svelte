@@ -51,10 +51,10 @@
     <p>Online at: <a href={`http://${pageName}.localhost`} class="text-blue-600">{`http://${pageName}.localhost`}</a></p>
 
     <h1 class="mt-8">Contact</h1>
-    <ContactEditor name="facebook" value={data.socials && data.socials.facebook ? data.socials.facebook : ''} shownName={"Facebook"}/>
-    <ContactEditor name="github" value={data.socials && data.socials.github ? data.socials.github : ''} shownName={"Github"}/>
-    <ContactEditor name="email" value={data.socials && data.socials.email ? data.socials.email : ''} shownName={"Email"}/>
-    <ContactEditor name="linkedin" value={data.socials && data.socials.linkedin ? data.socials.linkedin : ''} shownName={"LinkedIn"}/>
+    <ContactEditor name="Facebook" value={data.socials && data.socials.Facebook ? data.socials.Facebook : ''} shownName={"Facebook"}/>
+    <ContactEditor name="GitHub" value={data.socials && data.socials.GitHub ? data.socials.GitHub : ''} shownName={"GitHub"}/>
+    <ContactEditor name="Email" value={data.socials && data.socials.Email ? data.socials.Email : ''} shownName={"Email"}/>
+    <ContactEditor name="LinkedIn" value={data.socials && data.socials.LinkedIn ? data.socials.LinkedIn : ''} shownName={"LinkedIn"}/>
 
     
     <div class="mt-8">

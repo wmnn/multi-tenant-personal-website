@@ -76,10 +76,10 @@ export interface Post {
 }
 
 export interface Socials {
-    email?: string,
-    linkedin?: string,
-    facebook?: string,
-    instagram?: string,
-    youtube?: string,
-    github?: string
+    Email?: string,
+    LinkedIn?: string,
+    Facebook?: string,
+    Instagram?: string,
+    YouTube?: string,
+    GitHub?: string
 }
