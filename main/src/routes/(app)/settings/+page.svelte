@@ -48,6 +48,7 @@
         <h1>Page name:</h1>
     </label>
     <Input value={pageName} name={`pageName`}/>
+    <p>Online at: <a href={`http://${pageName}.localhost`} class="text-blue-600">{`http://${pageName}.localhost`}</a></p>
 
     <h1 class="mt-8">Contact</h1>
     <ContactEditor name="facebook" value={data.socials && data.socials.facebook ? data.socials.facebook : ''} shownName={"Facebook"}/>

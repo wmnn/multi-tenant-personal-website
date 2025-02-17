@@ -1,4 +1,3 @@
-import { getDB, getUserStore } from '$lib/server/singleton.js'
 import { redirect } from '@sveltejs/kit'
 
 /** @type {import('./$types').PageServerLoad} */
