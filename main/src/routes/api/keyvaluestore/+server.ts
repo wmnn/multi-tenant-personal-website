@@ -1,5 +1,5 @@
 import { KEYS } from "$lib/client/KEYVALUESTORE_KEYS.js";
-import { getAuthManager, getKeyValueStore, getUserStore } from "$lib/server/singleton.js";
+import { getAuthManager, getDB, getKeyValueStore, getUserStore } from "$lib/server/singleton.js";
 import { json, type RequestEvent } from "@sveltejs/kit";
 import { randomUUID } from "crypto";
 
@@ -21,6 +21,11 @@ export async function PUT(event) {
                 status: 404
             })
         }
+        const projects = data.projects
+        for (const project of projects) {
+            await getDB().addProject(uid, project);
+        }
+        delete data['projects']
         delete data['email']
         delete data['password']
         batchInsert(uid, data)

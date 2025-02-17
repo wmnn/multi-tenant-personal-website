@@ -7,12 +7,14 @@
     import Position1 from "./Position1.svelte";
     import Position2 from "./Position2.svelte";
     import Position3 from "./Position3.svelte";
+    import Position4 from "./Position4.svelte";
+    const maxPositionsIdx = 4
 
 </script>
 
 <div class="flex flex-col grow p-8 gap-4 w-[100vh] h-[100vh] justify-between">
     <div class="flex justify-center">
-        <ProgressBar currentPosition={$position} maxPosition={3} />        
+        <ProgressBar currentPosition={$position} maxPosition={maxPositionsIdx} />        
     </div>
 
     <div>
@@ -20,6 +22,7 @@
         <Position1 />
         <Position2 />
         <Position3 />
+        <Position4 />
     </div>  
 
     <div class="flex mt-16 gap-4">
@@ -28,7 +31,7 @@
                 Back
             </Button>
         {/if}
-        {#if $position != 3}
+        {#if $position != 4}
             <Button handleClick={(e) => {e.preventDefault(); $position++}}>
                 Next
             </Button>

@@ -4,8 +4,9 @@
     import Input from "$lib/client/Input.svelte";
     import Popup from "$lib/client/Popup.svelte";
     export let handleSubmit
-    export let isLoading
+    export let isLoading = false;
     export let isEditPopupShown
+    export let prevTitle
     export let title = ''
     export let thumbnail = ''
     export let href = ''
@@ -19,16 +20,19 @@
                     <CrossIcon />
                 </button>
             </div>
+            <!-- svelte-ignore a11y-label-has-associated-control -->
             <label>
                 Project name:
             </label>
             <Input bind:value={title} />
 
+            <!-- svelte-ignore a11y-label-has-associated-control -->
             <label>
                 Thumbnail url:
             </label>
             <Input bind:value={thumbnail} />
 
+            <!-- svelte-ignore a11y-label-has-associated-control -->
             <label>
                 Project url:
             </label>
@@ -40,11 +44,15 @@
             <Button handleClick={() => isEditPopupShown = false}>
                 Cancel
             </Button>
-            <Button handleClick={() => handleSubmit(title, thumbnail, href)} isLoading={isLoading}>
+            <Button handleClick={() => {
+                isLoading = true;
+                handleSubmit(prevTitle, title, thumbnail, href);
+                isEditPopupShown = false;
+                isLoading = false;
+            }} isLoading={isLoading}>
                 <p class="text-green-600">
                     Save
                 </p>
-                
             </Button>
         </div>
     </div>

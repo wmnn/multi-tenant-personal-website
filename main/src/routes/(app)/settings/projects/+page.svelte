@@ -1,22 +1,17 @@
 <script lang="ts">
     import { request } from '$lib/client/auth';
-    import Button from '$lib/client/Button.svelte';
-    import PlusIcon from '$lib/client/icons/PlusIcon.svelte';
     import { onMount, tick } from 'svelte';
-    import Project from './Project.svelte';
-    import ProjectPopup from './ProjectPopup.svelte';
+    import Project from '$lib/client/Editors/Projects/Project.svelte';
     import { projects } from './projects'
+    import AddProject from '$lib/client/Editors/Projects/AddProject.svelte';
     export let data
-
-    let isAddProjectPopupShown = false;
-    let isLoading = false;
 
     onMount(() => {
         $projects = data.projects
     })
 
-    async function handleSubmit(newTitle: string, newImageUrl: string, newHref: string) {
-        isLoading = true;
+    async function handleAddProject(prevTitle: string, newTitle: string, newImageUrl: string, newHref: string) {
+     
         const newProject: any = {
             title: newTitle,
             imageUrl: newImageUrl,
@@ -30,32 +25,62 @@
         if (res.status == 200) {
             $projects = [...$projects, newProject]
         }
-        
-        isAddProjectPopupShown = false;
-        isLoading = false;
+
+    }
+
+    async function handleEdit(prevTitle: string, newTitle: string, newImageUrl: string, newHref: string) {
+        const editedProject: any = {
+            title: newTitle,
+            imageUrl: newImageUrl,
+            href: newHref
+        }
+        const res = await request('/api/projects', {
+            method: 'PATCH',
+            body: JSON.stringify({
+                title: prevTitle,
+                editedProject
+            })
+        })
+
+        if (res.status == 200) {
+            $projects = $projects.map((project: any) => {
+                if (project.title != prevTitle) {
+                    return project
+                }
+                return {
+                    title: newTitle,
+                    imageUrl: newImageUrl,
+                    href: newHref
+                }
+            })
+        }
+    }
+
+    async function handleDelete(title: string) {    
+        const res = await request('/api/projects', {
+            method: 'DELETE',
+            body: JSON.stringify({
+                title
+            })
+        })
+
+        if (res.status == 200) {
+            $projects = $projects.filter((project: any) => project.title != title)
+        }
     }
 </script>
 
 <div class="flex flex-col gap-4 mt-8 items-center">
-    <Button classes={`md:max-w-[50%] flex gap-2 items-center`} handleClick={() => isAddProjectPopupShown = true}>
-    
-            <PlusIcon></PlusIcon>
-            Add project
-    </Button>
 
-    {#if isAddProjectPopupShown}
-        <ProjectPopup
-            bind:isEditPopupShown={isAddProjectPopupShown}
-            {isLoading}
-            {handleSubmit}
-        />
-    {/if}
+    <AddProject handleAddProject={handleAddProject}/>
 
     {#each $projects as project}
         <Project 
-            bind:title={project.title}
-            bind:thumbnail={project.imageUrl}
-            bind:href={project.href}
+            title={project.title}
+            thumbnail={project.imageUrl}
+            href={project.href}
+            handleEdit={handleEdit}
+            handleDelete={handleDelete}
         />
     {/each}
 </div>

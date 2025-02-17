@@ -12,6 +12,7 @@ export const position = writable(0);
 export const workExperiences: Writable<CVDataEntry[]> = writable([]);
 export const education: Writable<CVDataEntry[]> = writable([]);
 export const about = writable('');
+export const projects: any = writable([]);
 
 
 export async function handleSubmit() {
@@ -21,8 +22,8 @@ export async function handleSubmit() {
     const abt: any = await new Promise(resolve => about.subscribe(val => resolve(val)))
     const wrkExp: any = await new Promise(resolve => workExperiences.subscribe(val => resolve(val)))
     const educationn: any = await new Promise(resolve => education.subscribe(val => resolve(val)))
+    const projectss: any = await new Promise(resolve => projects.subscribe((val: any) => resolve(val))) 
 
-    // Send the request using a custom 'request' function or fetch
     try {
         const res = await request('/api/keyvaluestore', {
             method: 'PUT',
@@ -35,7 +36,8 @@ export async function handleSubmit() {
                 password: psswrd,
                 about: abt,
                 workexperience: wrkExp,
-                education: educationn
+                education: educationn,
+                projects: projectss
             })
         });
        
@@ -112,3 +114,10 @@ export const DEFAULT_ABOUT_SECTION = `
 </div>
 
 `
+export const DEFAULT_PROJECTS = [
+    { 
+        title: "LyricsFluencer", 
+        imageUrl: "https://raw.githubusercontent.com/wmnn/LyricsFluencer-SwiftUI/refs/heads/main/LyricsFluencer/Assets.xcassets/AppIcon.appiconset/Untitled%20design.png", 
+        href: "https://github.com/wmnn/LyricsFluencer-SwiftUI" 
+    }
+]
