@@ -2,7 +2,7 @@
     import Button from "$lib/client/Button.svelte";
     import { buttonStyles } from "$lib/client/styles";
     import ProgressBar from "./ProgressBar.svelte";
-    import { position, handleSubmit, handleSubmitDefault } from './onboarding';
+    import { position, handleSubmit } from './onboarding';
     import Position0 from "./Position0.svelte";
     import Position1 from "./Position1.svelte";
     import Position2 from "./Position2.svelte";
@@ -22,16 +22,14 @@
         <Position3 />
     </div>  
 
-
-    {#if $position == 0}
-        <Button type="button" handleClick={(e) => handleSubmitDefault()}>
-            Use default values
-        </Button>
-    {/if}
-
     <div class="flex mt-16 gap-4">
+        {#if $position != 0}
+            <Button handleClick={(e) => {e.preventDefault(); $position--}}>
+                Back
+            </Button>
+        {/if}
         {#if $position != 3}
-            <Button handleClick={(e) => {e.preventDefault(); $position = $position + 1}}>
+            <Button handleClick={(e) => {e.preventDefault(); $position++}}>
                 Next
             </Button>
         {:else}
