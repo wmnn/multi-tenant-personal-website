@@ -14,7 +14,7 @@
     <!-- Education -->
     <h2>Education</h2>
     <CvEditor data={$education} handleNewCVData={updateEducation}/>
-    <Button type="button" handleClick={(e) => {
+    <Button type="button" classes={`mt-8`} handleClick={(e) => {
         $education = DEFAULT_CV_DATA.education
     }}>
         Use default values

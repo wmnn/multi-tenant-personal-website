@@ -16,8 +16,8 @@
     
 </script>
 
-<div class="flex gap-2 w-full md:max-w-[50%] min-w-[50%]">
-    <a class="rounded-xl overflow-hidden shadow-xl border border-gray-200 max-w-[30%]" href={href} target="_blank">
+<div class="flex gap-2 w-full min-w-[50%]">
+    <a class="rounded-xl overflow-hidden shadow-xl border border-gray-200 max-w-[30%] xl:max-w-[15%]" href={href} target="_blank">
         <img 
             src={thumbnail} 
             alt={`${title} thumbnail`} 

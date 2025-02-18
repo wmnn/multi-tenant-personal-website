@@ -18,14 +18,16 @@ export async function POST(e) {
 
     // Update socials
     const body = await e.request.json();
-    const socials: Socials = {
-        GitHub: handleLinks(body.GitHub),
-        Facebook: handleLinks(body.Facebook),
-        YouTube: handleLinks(body.Youtube),
-        LinkedIn: handleLinks(body.LinkedIn),
-        Instagram: handleLinks(body.Instagram),
-        Email: body.Email
-    }
+    console.log(body)
+    const socials = body.socials
+    // const socials: Socials = {
+    //     GitHub: handleLinks(body.GitHub),
+    //     Facebook: handleLinks(body.Facebook),
+    //     YouTube: handleLinks(body.Youtube),
+    //     LinkedIn: handleLinks(body.LinkedIn),
+    //     Instagram: handleLinks(body.Instagram),
+    //     Email: body.Email
+    // }
     if (Object.keys(socials).length > 0) {
         keyValueStore.set(e.locals.pageName!, KEYS.socials, JSON.stringify(socials));
     }

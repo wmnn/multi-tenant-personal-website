@@ -5,14 +5,18 @@ import { writable, type Writable } from "svelte/store";
 
 export const email = writable('');
 export const password = writable('');
-export const firstName = writable('');
-export const lastName = writable('');
 export const position = writable(0);
 
 export const workExperiences: Writable<CVDataEntry[]> = writable([]);
 export const education: Writable<CVDataEntry[]> = writable([]);
 export const about = writable('');
 export const projects: any = writable([]);
+export const socials: any = writable({
+    Facebook: '',
+    LinkedIn: '',
+    GitHub: '',
+    Email: ''
+});
 
 
 export async function handleSubmit() {
@@ -23,6 +27,7 @@ export async function handleSubmit() {
     const wrkExp: any = await new Promise(resolve => workExperiences.subscribe(val => resolve(val)))
     const educationn: any = await new Promise(resolve => education.subscribe(val => resolve(val)))
     const projectss: any = await new Promise(resolve => projects.subscribe((val: any) => resolve(val))) 
+    const subscribedSocials: any = await new Promise(resolve => socials.subscribe((val: any) => resolve(val))) 
 
     try {
         const res = await request('/api/keyvaluestore', {
@@ -37,7 +42,8 @@ export async function handleSubmit() {
                 about: abt,
                 workexperience: wrkExp,
                 education: educationn,
-                projects: projectss
+                projects: projectss,
+                socials: subscribedSocials
             })
         });
        

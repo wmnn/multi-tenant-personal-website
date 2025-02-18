@@ -15,7 +15,7 @@
     <!-- Work experiences -->
     <h2>Work experiences</h2>
     <CvEditor data={$workExperiences} handleNewCVData={updateWorkExperiences}/>
-    <Button type="button" handleClick={(e) => {
+    <Button type="button" classes={`mt-8`} handleClick={(e) => {
         $workExperiences = DEFAULT_CV_DATA.workExperiences
     }}>
         Use default values

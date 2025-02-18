@@ -7,14 +7,25 @@ export async function load(e) {
 
     const socials: string | undefined = await getKeyValueStore().get(e.locals.pageName!, KEYS.socials);
 
+    const emptySocials = {
+        Facebook: '',
+        GitHub: '',
+        Email: '',
+        LinkedIn: '',
+    }
     if (!socials) {
         return {
             pageName: e.locals.pageName,
+            socials: emptySocials
         };
     }
 
+    const savedSocials = JSON.parse(socials) as Socials;
     return {
-        socials: JSON.parse(socials) as Socials, 
+        socials: {
+            ...emptySocials,
+            ...savedSocials
+        }, 
         pageName: e.locals.pageName,
     };
     

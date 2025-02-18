@@ -28,7 +28,7 @@
         {/each}
     </div>
 
-    <Button handleClick={() => isPopupShown = true} type="button">Add entry</Button>
+    <Button handleClick={() => isPopupShown = true} type="button" classes={`my-8`}>Add entry</Button>
 
     {#if isPopupShown}
         <CVPopup {handleFormSubmit} bind:isPopupShown={isPopupShown} />

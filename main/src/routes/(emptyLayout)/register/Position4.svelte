@@ -37,7 +37,8 @@
 
     <div class="mt-8"></div>
     
-    <div class="flex flex-col gap-4 xl:max-w-[50%] xl:min-w-[50%]">
+    <div class="flex flex-col gap-4 w-full">
+    <!-- <div class="flex flex-col gap-4 md:max-w-[50%] md:min-w-[50%]"> -->
         {#each $projects as project}
             <Project 
                 title={project.title}
@@ -47,8 +48,8 @@
                 handleDelete={handleDelete}
             />
         {/each}
-        <div class="w-full">
-            <Button type="button" classes={`w-full`} handleClick={(e) => {
+        <div>
+            <Button type="button"  handleClick={(e) => {
                 $projects = DEFAULT_PROJECTS;
             }}>
                 Use default values

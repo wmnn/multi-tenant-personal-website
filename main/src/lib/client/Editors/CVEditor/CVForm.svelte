@@ -31,7 +31,7 @@
     }
 </script>
 
-<form class="flex flex-col gap-2 bg-white p-8 rounded-xl relative" method="POST" on:submit={e => prepareFormSubmit(e)}>
+<form class="flex flex-col gap-2 bg-white p-8 rounded-xl relative w-full h-full xl:max-w-[50%] xl:h-min" method="POST" on:submit={e => prepareFormSubmit(e)}>
     
     <div class="flex justify-end">
         <button on:click={(e) => {e.preventDefault(); isPopupShown = false}}>

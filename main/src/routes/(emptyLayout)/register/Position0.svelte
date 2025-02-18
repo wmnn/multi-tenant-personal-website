@@ -1,22 +1,13 @@
 <script>
     import Input from "$lib/client/Input.svelte";
-    import {email, firstName, lastName, password, position} from './onboarding'
-    import { buttonStyles, inputStyles } from "$lib/client/styles";
+    import {email, password, position, socials} from './onboarding'
+    import { inputStyles } from "$lib/client/styles";
     import Button from "$lib/client/Button.svelte";
-    import ContactEditor from "../../(app)/settings/ContactEditor.svelte";
+    import SocialsEditor from "$lib/client/Editors/SocialsEditor.svelte";
+    let forceUpdateSocials = false
 
 </script>
 <div class="flex flex-col gap-4" class:hidden={$position != 0}>
-    
-    <label for="firstName">
-        First name
-    </label>
-    <Input placeholder="John" bind:value={$firstName} name="firstName"/>
-
-    <label for="lastName">
-        Last name
-    </label>
-    <Input placeholder="Doe" bind:value={$lastName} name="lastName"/>
 
     <label for="email">
         Email
@@ -28,13 +19,25 @@
     </label>
     <input name="password" placeholder={'password'} class={`${inputStyles}`} bind:value={$password} type="password"/>  
 
+    {#key forceUpdateSocials}
+        <SocialsEditor 
+            bind:facebook={$socials.Facebook}
+            bind:github={$socials.GitHub}
+            bind:linkedin={$socials.LinkedIn}
+            bind:email={$socials.Email}
+        />
+    {/key}
+    
    
     <Button type="button" handleClick={(e) => {
-        $firstName = 'John'
-        $lastName = 'Doe'
-        $email = 'test'
+        $email = 'test@test.com'
         $password = '123456'
         alert(`Password is: ${$password}`)
+        $socials = {
+            ...$socials,
+            LinkedIn: 'https://www.linkedin.com/in/peter-christian-wuerdemann/'
+        }
+        forceUpdateSocials = !forceUpdateSocials
     }}>
         Use default values
     </Button>

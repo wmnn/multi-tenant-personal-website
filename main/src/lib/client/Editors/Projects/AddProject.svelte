@@ -8,7 +8,7 @@
 
 </script>
 <div class="w-full flex justify-center">
-    <Button classes={`md:max-w-[50%] flex gap-2 items-center`} handleClick={() => isAddProjectPopupShown = true}>
+    <Button classes={`flex gap-2 items-center`} handleClick={() => isAddProjectPopupShown = true}>
         <PlusIcon></PlusIcon>
         Add project
     </Button>

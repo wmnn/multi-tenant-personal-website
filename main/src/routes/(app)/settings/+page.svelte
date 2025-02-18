@@ -1,13 +1,15 @@
 <script lang="ts">
     import { request } from '$lib/client/auth';
     import Button from '$lib/client/Button.svelte';
+    import SocialsEditor from '$lib/client/Editors/SocialsEditor.svelte';
     import Input from '$lib/client/Input.svelte';
-    import LoadingSpinner from '$lib/client/LoadingSpinner.svelte';
-    import ContactEditor from './ContactEditor.svelte';
-    import { Spinner } from 'flowbite-svelte';
 
     export let data
+    let socials = data.socials
+
     let pageName = data.pageName
+    let newPageName = pageName
+
     let isMsgShown = false;
     let isSuccess = false;
     let isLoading = false;
@@ -17,14 +19,8 @@
         e.preventDefault();
         isLoading = true;
         const formData : any = {};
-
-        // Adding all inputs to the form data
-        for (let element of e.target.elements) { 
-            // Skip any elements that are not inputs, selects, or textareas
-            if (element.name) {
-                formData[element.name] = element.value;
-            }
-        }
+        formData.newPageName = newPageName
+        formData.socials = socials
 
         const res = await request('/api/settings', {
             method: 'POST',
@@ -48,16 +44,16 @@
     <label for="pageName">
         <h1>Page name:</h1>
     </label>
-    <Input value={pageName} name={`pageName`}/>
+    <Input bind:value={newPageName} name={`pageName`}/>
     <p>Online at: <a href={`http://${pageName}.localhost`} class="text-blue-600">{`http://${pageName}.localhost`}</a></p>
 
-    <h1 class="mt-8">Contact</h1>
-    <ContactEditor name="Facebook" value={data.socials && data.socials.Facebook ? data.socials.Facebook : ''} shownName={"Facebook"}/>
-    <ContactEditor name="GitHub" value={data.socials && data.socials.GitHub ? data.socials.GitHub : ''} shownName={"GitHub"}/>
-    <ContactEditor name="Email" value={data.socials && data.socials.Email ? data.socials.Email : ''} shownName={"Email"}/>
-    <ContactEditor name="LinkedIn" value={data.socials && data.socials.LinkedIn ? data.socials.LinkedIn : ''} shownName={"LinkedIn"}/>
+    <SocialsEditor 
+        bind:facebook={socials.Facebook} 
+        bind:github={socials.GitHub} 
+        bind:email={socials.Email} 
+        bind:linkedin={socials.LinkedIn} 
+    />
 
-    
     <div class="mt-8">
         {#if isMsgShown}
             <p style:color={isSuccess ? 'green' : 'red'}>{msg}</p>
