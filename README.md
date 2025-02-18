@@ -13,3 +13,7 @@ The nginx reverse proxy routes the request to the correct server. For subdomains
 3. open the phpmyadmin ui and execute the init.sql file located at the root folder
 
 4. open `https://localhost`
+
+### Video Preview
+
+[A video preview is available.](https://youtu.be/DMZgPSglkO0)
