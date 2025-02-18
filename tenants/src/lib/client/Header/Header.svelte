@@ -24,9 +24,11 @@
 		<div class="px-8 py-8 flex flex-col gap-2 justify-center">
 			<h2 class="text-reallylight">Contact</h2>
 			{#each Object.keys(socials) as key}
-				<HeaderSubTitleHref href={socials[key]}>
-					{key}
-				</HeaderSubTitleHref>
+				{#if socials[key] && socials[key] != ''}
+					<HeaderSubTitleHref href={socials[key]}>
+						{key}
+					</HeaderSubTitleHref>
+				{/if}
 			{/each}
 		</div>
 
