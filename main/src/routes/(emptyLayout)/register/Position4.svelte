@@ -36,19 +36,27 @@
     <AddProject {handleAddProject} />
 
     <div class="mt-8"></div>
-    {#each $projects as project}
-        <Project 
-            title={project.title}
-            thumbnail={project.imageUrl}
-            href={project.href}
-            handleEdit={handleEdit}
-            handleDelete={handleDelete}
-        />
-    {/each}
+    
+    <div class="flex flex-col gap-4 xl:max-w-[50%] xl:min-w-[50%]">
+        {#each $projects as project}
+            <Project 
+                title={project.title}
+                thumbnail={project.imageUrl}
+                href={project.href}
+                handleEdit={handleEdit}
+                handleDelete={handleDelete}
+            />
+        {/each}
+        <div class="w-full">
+            <Button type="button" classes={`w-full`} handleClick={(e) => {
+                $projects = DEFAULT_PROJECTS;
+            }}>
+                Use default values
+            </Button>
+        </div>
+        
+    </div>
+    
 
-    <Button type="button" handleClick={(e) => {
-        $projects = DEFAULT_PROJECTS;
-    }}>
-        Use default values
-    </Button>
+    
 </div>

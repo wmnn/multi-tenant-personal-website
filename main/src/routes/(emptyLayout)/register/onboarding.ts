@@ -119,5 +119,10 @@ export const DEFAULT_PROJECTS = [
         title: "LyricsFluencer", 
         imageUrl: "https://raw.githubusercontent.com/wmnn/LyricsFluencer-SwiftUI/refs/heads/main/LyricsFluencer/Assets.xcassets/AppIcon.appiconset/Untitled%20design.png", 
         href: "https://github.com/wmnn/LyricsFluencer-SwiftUI" 
+    },
+    { 
+        title: "Multi-tenant personal website", 
+        imageUrl: "https://geekflare.com/de/wp-content/uploads/2023/07/Single-Multi-Tenant-1500x963.jpg", 
+        href: "https://github.com/wmnn/multi-tenant-personal-website" 
     }
 ]
